@@ -10,9 +10,16 @@ public class DailyProducts {
 	private double Fat;
 	private double Kcal;
 	private int MealNo;
+	private double Weight;
 	
+	public double getWeight() {
+		return Weight;
+	}
+	public void setWeight(double weight) {
+		Weight = weight;
+	}
 	public double getKcal() {
-		return Kcal = ((Carbo+Whey)*4+(Fat*9));
+		return Kcal = ((Carbo+Whey)*4+(Fat*9))*(Weight/100);
 	}
 	public void setKcal(double kcal) {
 		Kcal = kcal;

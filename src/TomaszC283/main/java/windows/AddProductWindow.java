@@ -39,7 +39,7 @@ public class AddProductWindow {
 	ImageIcon upsImage = new ImageIcon("src/TomaszC283/main/java/resources/ups.png");
 	ImageIcon removeImage = new ImageIcon("src/TomaszC283/main/java/resources/remove.png");
 	
-	public void NoweOkno() {
+	public void NewWindow() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
