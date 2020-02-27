@@ -7,56 +7,67 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.font.TextAttribute;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
-
+import TomaszC283.main.java.DailyProducts;
 import TomaszC283.main.java.windows.AddProductWindow;
 
+@SuppressWarnings("serial")
 public class MainWindow extends JFrame {
-	// Elemenety GUI
 
-	private static JComboBox<String> comboBox = new JComboBox<String>();
-	private static JSlider SuwakKalorii = new JSlider(0, 3000, 0);
-	private static JTextField KWeglowodanyTotal = new JTextField(13);
-	private static JTextField KBialkoTotal = new JTextField(13);
-	private static JTextField KTluszczeTotal = new JTextField(13);
-	private static JTextField KPodsumowanieTotal = new JTextField(13);
-	private static JList<String> JListaGlowna = new JList<>();
+	// GUI
 
-	private static JTextField TXTPosilek1W = new JTextField(6);
-	private static JTextField TXTPosilek1B = new JTextField(6);
-	private static JTextField TXTPosilek1T = new JTextField(6);
-	private static JTextField TXTPosilek2W = new JTextField(6);
-	private static JTextField TXTPosilek2B = new JTextField(6);
-	private static JTextField TXTPosilek2T = new JTextField(6);
-	private static JTextField TXTPosilek3W = new JTextField(6);
-	private static JTextField TXTPosilek3B = new JTextField(6);
-	private static JTextField TXTPosilek3T = new JTextField(6);
-	private static JTextField TXTPosilek4W = new JTextField(6);
-	private static JTextField TXTPosilek4B = new JTextField(6);
-	private static JTextField TXTPosilek4T = new JTextField(6);
-	private static JTextField TXTPosilek5W = new JTextField(6);
-	private static JTextField TXTPosilek5B = new JTextField(6);
-	private static JTextField TXTPosilek5T = new JTextField(6);
+	private static JComboBox<String> comboBox = new JComboBox<>();
+	JComboBox<Integer> comboBoxNr = new JComboBox<>();
+
+	private static JSlider KcalSlider = new JSlider(0, 3000, 0);
+	private static JTextField TotalCarboTF = new JTextField(13);
+	private static JTextField TotalWheyTF = new JTextField(13);
+	private static JTextField TotalFatsTF = new JTextField(13);
+	private static JTextField TotalKcalTF = new JTextField(13);
+
+	private static JTextField MealNo1_TF_Carbo = new JTextField(6);
+	private static JTextField MealNo1_TF_Whey = new JTextField(6);
+	private static JTextField MealNo1_TF_Fats = new JTextField(6);
+	private static JTextField MealNo2_TF_Carbo = new JTextField(6);
+	private static JTextField MealNo2_TF_Whey = new JTextField(6);
+	private static JTextField MealNo2_TF_Fats = new JTextField(6);
+	private static JTextField MealNo3_TF_Carbo = new JTextField(6);
+	private static JTextField MealNo3_TF_Whey = new JTextField(6);
+	private static JTextField MealNo3_TF_Fats = new JTextField(6);
+	private static JTextField MealNo4_TF_Carbo = new JTextField(6);
+	private static JTextField MealNo4_TF_Whey = new JTextField(6);
+	private static JTextField MealNo4_TF_Fats = new JTextField(6);
+	private static JTextField MealNo5_TF_Carbo = new JTextField(6);
+	private static JTextField MealNo5_TF_Whey = new JTextField(6);
+	private static JTextField MealNo5_TF_Fats = new JTextField(6);
+
+	final JTextField WeightTF = new JTextField(9);
+	final JTextField CarboTF = new JTextField(9);
+	final JTextField WheyTF = new JTextField(9);
+	final JTextField FatsTF = new JTextField(9);
+	final JTextField KcalTF = new JTextField(9);
 
 	// Icons
 	ImageIcon deleteImage = new ImageIcon("src/TomaszC283/main/java/resources/delete.png");
@@ -66,6 +77,18 @@ public class MainWindow extends JFrame {
 	ImageIcon upsImage = new ImageIcon("src/TomaszC283/main/java/resources/ups.png");
 	ImageIcon removeImage = new ImageIcon("src/TomaszC283/main/java/resources/remove.png");
 
+	// Date today
+	SimpleDateFormat date_sdf = new SimpleDateFormat("dd/MM/yyyy");
+	Date date = new Date();
+	String DateToday = date_sdf.format(date);
+
+	// Products Class
+	private DailyProducts dailyProducts = new DailyProducts();
+	private String DateFromDB;
+
+	// Variables
+	private int ProductID;
+
 	public MainWindow() {
 
 		super("Fitness Calculator");
@@ -74,19 +97,31 @@ public class MainWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 
+		// Update combobox
+		RefreshComboBox();
+
+		// Create JTable
+		String[] columnNames = { "Product Name", "No of Meal", "Weight", "Carbohydrates", "Proteins", "Fats" };
+
+		Object[][] data = { {"","","","","","" } };
+
+		JTable tableList = new JTable(data, columnNames);
+		JScrollPane scrollPane = new JScrollPane(tableList);
+		tableList.setFillsViewportHeight(true);
+
 		// MainPanel
 
 		Container mainContainer = getContentPane();
 		mainContainer.setLayout(new BorderLayout(6, 3));
 		mainContainer.setBackground(new Color(245, 255, 255));
 
-		// Bottoms
+		// Buttons
 
 		JButton ButtonAddNewProd = new JButton("     Add new product     ", carrotImage);
-		JButton ButtonClearList = new JButton("   Wyczyść listę   ", cancelImage);
-		JButton ButtonAddProd = new JButton("    Dodaj       ", plusImage);
-		JButton ButtonDeleteProd = new JButton("     Usuń produkt      ", deleteImage);
-		JButton ButtonRemoveProd = new JButton("    Usuń posiłek z listy  ", removeImage);
+		JButton ButtonClearList = new JButton("   Clear list   ", cancelImage);
+		JButton ButtonAddProd = new JButton("    Add       ", plusImage);
+		JButton ButtonDeleteProd = new JButton(" Remove Product from Database  ", deleteImage);
+		JButton ButtonRemoveProd = new JButton("    Remove Product from list  ", removeImage);
 
 		ButtonAddNewProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		ButtonClearList.setBorder(new LineBorder(new Color(48, 213, 200), 2));
@@ -100,7 +135,7 @@ public class MainWindow extends JFrame {
 		ButtonDeleteProd.setBackground(new Color(255, 229, 255));
 		ButtonRemoveProd.setBackground(new Color(255, 229, 255));
 
-		// GÓRNY PANEL
+		// Top Panel
 
 		JPanel AuxTopPanel1 = new JPanel();
 		JPanel AuxTopPanel2 = new JPanel();
@@ -110,36 +145,36 @@ public class MainWindow extends JFrame {
 		JPanel AuxTopPanel6 = new JPanel();
 		JPanel AuxTopPanel7 = new JPanel();
 
-		JTextField MasaTF = new JTextField(9);
-		JTextField CarboTF = new JTextField(9);
-		JTextField WheyTF = new JTextField(9);
-		JTextField FatsTF = new JTextField(9);
-		JTextField SumaTF = new JTextField(9);
-
-		MasaTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
+		WeightTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		CarboTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		WheyTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		FatsTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		SumaTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
+		KcalTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 
-		MasaTF.setText("100");
-		MasaTF.setHorizontalAlignment(JTextField.CENTER);
+		WeightTF.setText("100");
+
+		WeightTF.setHorizontalAlignment(JTextField.CENTER);
+		CarboTF.setHorizontalAlignment(JTextField.CENTER);
+		WheyTF.setHorizontalAlignment(JTextField.CENTER);
+		FatsTF.setHorizontalAlignment(JTextField.CENTER);
+		KcalTF.setHorizontalAlignment(JTextField.CENTER);
+
 		CarboTF.setEnabled(false);
 		WheyTF.setEnabled(false);
 		FatsTF.setEnabled(false);
-		SumaTF.setEnabled(false);
+		KcalTF.setEnabled(false);
 
-		MasaTF.setForeground(Color.RED);
+		WeightTF.setForeground(Color.RED);
 		CarboTF.setDisabledTextColor(Color.RED);
 		WheyTF.setDisabledTextColor(Color.RED);
 		FatsTF.setDisabledTextColor(Color.RED);
-		SumaTF.setDisabledTextColor(Color.RED);
+		KcalTF.setDisabledTextColor(Color.RED);
 
-		MasaTF.setBackground(new Color(204, 255, 255));
+		WeightTF.setBackground(new Color(204, 255, 255));
 		CarboTF.setBackground(new Color(204, 255, 255));
 		WheyTF.setBackground(new Color(204, 255, 255));
 		FatsTF.setBackground(new Color(204, 255, 255));
-		SumaTF.setBackground(new Color(204, 255, 255));
+		KcalTF.setBackground(new Color(204, 255, 255));
 
 		AuxTopPanel1.setBackground(new Color(245, 255, 255));
 		AuxTopPanel2.setBackground(new Color(245, 255, 255));
@@ -162,7 +197,7 @@ public class MainWindow extends JFrame {
 		JLabel Tittle4 = new JLabel("            Fats :");
 		JLabel Tittle5 = new JLabel("        Calories :");
 		JLabel Tittle6 = new JLabel("          Choose product from list : ");
-		JLabel TittleNr = new JLabel("  Nr of Meal:  ");
+		JLabel TittleNr = new JLabel("  No of Meal:  ");
 
 		Tittle1.setFont(new Font("Helvetica", Font.BOLD, 11));
 		Tittle2.setFont(new Font("Helvetica", Font.BOLD, 11));
@@ -179,20 +214,19 @@ public class MainWindow extends JFrame {
 		Tittle5.setForeground(Color.RED);
 		Tittle6.setForeground(Color.RED);
 		TittleNr.setForeground(Color.RED);
-		
+
 		comboBox.setBackground(new Color(204, 255, 255));
 		comboBox.setForeground(Color.RED);
 
-		String[] MealNumber = { "1", "2", "3", "4", "5" };
-		JComboBox comboBoxNr = new JComboBox();
-		comboBoxNr.setModel(new DefaultComboBoxModel(MealNumber));
+		Integer[] MealNumber = { 1, 2, 3, 4, 5 };
+		comboBoxNr.setModel(new DefaultComboBoxModel<Integer>(MealNumber));
 		comboBoxNr.setForeground(Color.RED);
 		comboBoxNr.setBackground(new Color(204, 255, 255));
 
-		// Dodanie Produktu do listy
+		// Add products to list Area
 
 		AuxTopPanel1.add(Tittle1);
-		AuxTopPanel1.add(MasaTF);
+		AuxTopPanel1.add(WeightTF);
 		AuxTopPanel2.add(Tittle2);
 		AuxTopPanel2.add(CarboTF);
 		AuxTopPanel3.add(Tittle3);
@@ -200,7 +234,7 @@ public class MainWindow extends JFrame {
 		AuxTopPanel4.add(Tittle4);
 		AuxTopPanel4.add(FatsTF);
 		AuxTopPanel5.add(Tittle5);
-		AuxTopPanel5.add(SumaTF);
+		AuxTopPanel5.add(KcalTF);
 		AuxTopPanel6.add(Tittle6);
 		AuxTopPanel6.add(comboBox);
 		AuxTopPanel6.add(ButtonAddNewProd);
@@ -234,28 +268,25 @@ public class MainWindow extends JFrame {
 		topPanel3.add(ButtonClearList);
 		topPanel3.add(ButtonRemoveProd);
 
-		// ŚRODKOWY PANEL
+		// Middle Panel
 
 		JPanel middlePanel = new JPanel();
-		JListaGlowna.setForeground(Color.BLUE);
-		JListaGlowna.setBackground(new Color(245, 255, 255));
-		JListaGlowna.setFont(new Font("Helvetica", Font.PLAIN, 12));
 
-		SuwakKalorii.setMajorTickSpacing(200);
-		SuwakKalorii.setMinorTickSpacing(50);
-		SuwakKalorii.setPaintTicks(true);
-		SuwakKalorii.setPaintLabels(true);
-		SuwakKalorii.setForeground(Color.RED);
-		SuwakKalorii.setBackground(new Color(245, 255, 255));
-		SuwakKalorii.setFont(new Font("Helvetica", Font.ITALIC, 11));
+		KcalSlider.setMajorTickSpacing(200);
+		KcalSlider.setMinorTickSpacing(50);
+		KcalSlider.setPaintTicks(true);
+		KcalSlider.setPaintLabels(true);
+		KcalSlider.setForeground(Color.RED);
+		KcalSlider.setBackground(new Color(245, 255, 255));
+		KcalSlider.setFont(new Font("Helvetica", Font.ITALIC, 11));
 
 		mainContainer.add(middlePanel);
 		middlePanel.setBorder(new LineBorder(new Color(48, 213, 200), 3));
 		middlePanel.setLayout(new BorderLayout());
-		middlePanel.add(JListaGlowna, BorderLayout.CENTER);
-		middlePanel.add(SuwakKalorii, BorderLayout.SOUTH);
+		middlePanel.add(scrollPane, BorderLayout.CENTER);
+		middlePanel.add(KcalSlider, BorderLayout.SOUTH);
 
-		// DOLNY PANEL
+		// Bottom Panel
 
 		JPanel bottomPanel1 = new JPanel();
 		JPanel bottomPanel2 = new JPanel();
@@ -286,30 +317,30 @@ public class MainWindow extends JFrame {
 		JLabel Tittle10 = new JLabel("                Tłuszcze :");
 		JLabel Tittle11 = new JLabel("                 Kalorie :");
 
-		KWeglowodanyTotal.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		KBialkoTotal.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		KTluszczeTotal.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		KPodsumowanieTotal.setBorder(new LineBorder(Color.RED, 2));
+		TotalCarboTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
+		TotalWheyTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
+		TotalFatsTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
+		TotalKcalTF.setBorder(new LineBorder(Color.RED, 2));
 
-		KWeglowodanyTotal.setHorizontalAlignment(JTextField.CENTER);
-		KBialkoTotal.setHorizontalAlignment(JTextField.CENTER);
-		KTluszczeTotal.setHorizontalAlignment(JTextField.CENTER);
-		KPodsumowanieTotal.setHorizontalAlignment(JTextField.CENTER);
+		TotalCarboTF.setHorizontalAlignment(JTextField.CENTER);
+		TotalWheyTF.setHorizontalAlignment(JTextField.CENTER);
+		TotalFatsTF.setHorizontalAlignment(JTextField.CENTER);
+		TotalKcalTF.setHorizontalAlignment(JTextField.CENTER);
 
-		KWeglowodanyTotal.setBackground(new Color(204, 255, 255));
-		KBialkoTotal.setBackground(new Color(204, 255, 255));
-		KTluszczeTotal.setBackground(new Color(204, 255, 255));
-		KPodsumowanieTotal.setBackground(new Color(204, 255, 255));
+		TotalCarboTF.setBackground(new Color(204, 255, 255));
+		TotalWheyTF.setBackground(new Color(204, 255, 255));
+		TotalFatsTF.setBackground(new Color(204, 255, 255));
+		TotalKcalTF.setBackground(new Color(204, 255, 255));
 
-		KWeglowodanyTotal.setDisabledTextColor(Color.RED);
-		KBialkoTotal.setDisabledTextColor(Color.RED);
-		KTluszczeTotal.setDisabledTextColor(Color.RED);
-		KPodsumowanieTotal.setDisabledTextColor(Color.RED);
+		TotalCarboTF.setDisabledTextColor(Color.RED);
+		TotalWheyTF.setDisabledTextColor(Color.RED);
+		TotalFatsTF.setDisabledTextColor(Color.RED);
+		TotalKcalTF.setDisabledTextColor(Color.RED);
 
-		KWeglowodanyTotal.setEnabled(false);
-		KBialkoTotal.setEnabled(false);
-		KTluszczeTotal.setEnabled(false);
-		KPodsumowanieTotal.setEnabled(false);
+		TotalCarboTF.setEnabled(false);
+		TotalWheyTF.setEnabled(false);
+		TotalFatsTF.setEnabled(false);
+		TotalKcalTF.setEnabled(false);
 
 		Tittle7.setFont(new Font("Helvetica", Font.BOLD | Font.ITALIC, 13));
 		Tittle8.setFont(new Font("Helvetica", Font.BOLD, 11));
@@ -324,13 +355,13 @@ public class MainWindow extends JFrame {
 		Tittle11.setForeground(Color.BLUE);
 
 		panel8.add(Tittle8);
-		panel8.add(KWeglowodanyTotal);
+		panel8.add(TotalCarboTF);
 		panel9.add(Tittle9);
-		panel9.add(KBialkoTotal);
+		panel9.add(TotalWheyTF);
 		panel10.add(Tittle10);
-		panel10.add(KTluszczeTotal);
+		panel10.add(TotalFatsTF);
 		panel11.add(Tittle11);
-		panel11.add(KPodsumowanieTotal);
+		panel11.add(TotalKcalTF);
 
 		bottomPanel1.add(bottomPanel2);
 		bottomPanel2.add(Tittle7);
@@ -340,7 +371,7 @@ public class MainWindow extends JFrame {
 		bottomPanel3.add(panel10);
 		bottomPanel3.add(panel11);
 
-		// Panel Boczny
+		// East Panel
 		JPanel panelEast1 = new JPanel();
 		JPanel panelEast2 = new JPanel();
 		JPanel panelEast2a = new JPanel();
@@ -386,160 +417,344 @@ public class MainWindow extends JFrame {
 		panelEast1.add(panelEast5);
 		panelEast1.add(panelEast6);
 
-		JLabel Posilek1 = new JLabel("                         Posiłek 1                          ");
-		JLabel Posilek2 = new JLabel("                         Posiłek 2                          ");
-		JLabel Posilek3 = new JLabel("                         Posiłek 3                          ");
-		JLabel Posilek4 = new JLabel("                         Posiłek 4                          ");
-		JLabel Posilek5 = new JLabel("                         Posiłek 5                          ");
-		JLabel Posilek1WBT = new JLabel("          W                   B                    T  ");
-		JLabel Posilek2WBT = new JLabel("          W                   B                    T  ");
-		JLabel Posilek3WBT = new JLabel("          W                   B                    T  ");
-		JLabel Posilek4WBT = new JLabel("          W                   B                    T  ");
-		JLabel Posilek5WBT = new JLabel("          W                   B                    T  ");
+		JLabel MealNo1 = new JLabel("                         Meal No 1                          ");
+		JLabel MealNo2 = new JLabel("                         Meal No 2                          ");
+		JLabel MealNo3 = new JLabel("                         Meal No 3                          ");
+		JLabel MealNo4 = new JLabel("                         Meal No 4                          ");
+		JLabel MealNo5 = new JLabel("                         Meal no 5                          ");
+		JLabel Posilek1WBT = new JLabel("          C                   W                    F  ");
+		JLabel Posilek2WBT = new JLabel("          C                   W                    F  ");
+		JLabel Posilek3WBT = new JLabel("          C                   W                    F  ");
+		JLabel Posilek4WBT = new JLabel("          C                   W                    F  ");
+		JLabel Posilek5WBT = new JLabel("          C                   W                    F  ");
 
-		Font underline = Posilek1.getFont();
-		Map attributes = underline.getAttributes();
-		attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-		Posilek1.setFont(underline.deriveFont(attributes));
-		Posilek2.setFont(underline.deriveFont(attributes));
-		Posilek3.setFont(underline.deriveFont(attributes));
-		Posilek4.setFont(underline.deriveFont(attributes));
-		Posilek5.setFont(underline.deriveFont(attributes));
-
-		Posilek1.setForeground(Color.BLUE);
-		Posilek2.setForeground(Color.BLUE);
-		Posilek3.setForeground(Color.BLUE);
-		Posilek4.setForeground(Color.BLUE);
-		Posilek5.setForeground(Color.BLUE);
+		MealNo1.setForeground(Color.BLUE);
+		MealNo2.setForeground(Color.BLUE);
+		MealNo3.setForeground(Color.BLUE);
+		MealNo4.setForeground(Color.BLUE);
+		MealNo5.setForeground(Color.BLUE);
 		Posilek1WBT.setForeground(Color.RED);
 		Posilek2WBT.setForeground(Color.RED);
 		Posilek3WBT.setForeground(Color.RED);
 		Posilek4WBT.setForeground(Color.RED);
 		Posilek5WBT.setForeground(Color.RED);
 
-		TXTPosilek1W.setDisabledTextColor(Color.BLUE);
-		TXTPosilek1B.setDisabledTextColor(Color.BLUE);
-		TXTPosilek1T.setDisabledTextColor(Color.BLUE);
-		TXTPosilek2W.setDisabledTextColor(Color.BLUE);
-		TXTPosilek2B.setDisabledTextColor(Color.BLUE);
-		TXTPosilek2T.setDisabledTextColor(Color.BLUE);
-		TXTPosilek3W.setDisabledTextColor(Color.BLUE);
-		TXTPosilek3B.setDisabledTextColor(Color.BLUE);
-		TXTPosilek3T.setDisabledTextColor(Color.BLUE);
-		TXTPosilek4W.setDisabledTextColor(Color.BLUE);
-		TXTPosilek4B.setDisabledTextColor(Color.BLUE);
-		TXTPosilek4T.setDisabledTextColor(Color.BLUE);
-		TXTPosilek5W.setDisabledTextColor(Color.BLUE);
-		TXTPosilek5B.setDisabledTextColor(Color.BLUE);
-		TXTPosilek5T.setDisabledTextColor(Color.BLUE);
+		MealNo1_TF_Carbo.setDisabledTextColor(Color.BLUE);
+		MealNo1_TF_Whey.setDisabledTextColor(Color.BLUE);
+		MealNo1_TF_Fats.setDisabledTextColor(Color.BLUE);
+		MealNo2_TF_Carbo.setDisabledTextColor(Color.BLUE);
+		MealNo2_TF_Whey.setDisabledTextColor(Color.BLUE);
+		MealNo2_TF_Fats.setDisabledTextColor(Color.BLUE);
+		MealNo3_TF_Carbo.setDisabledTextColor(Color.BLUE);
+		MealNo3_TF_Whey.setDisabledTextColor(Color.BLUE);
+		MealNo3_TF_Fats.setDisabledTextColor(Color.BLUE);
+		MealNo4_TF_Carbo.setDisabledTextColor(Color.BLUE);
+		MealNo4_TF_Whey.setDisabledTextColor(Color.BLUE);
+		MealNo4_TF_Fats.setDisabledTextColor(Color.BLUE);
+		MealNo5_TF_Carbo.setDisabledTextColor(Color.BLUE);
+		MealNo5_TF_Whey.setDisabledTextColor(Color.BLUE);
+		MealNo5_TF_Fats.setDisabledTextColor(Color.BLUE);
 
-		TXTPosilek1W.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek1B.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek1T.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek2W.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek2B.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek2T.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek3W.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek3B.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek3T.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek4W.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek4B.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek4T.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek5W.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek5B.setHorizontalAlignment(JTextField.CENTER);
-		TXTPosilek5T.setHorizontalAlignment(JTextField.CENTER);
+		MealNo1_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
+		MealNo1_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
+		MealNo1_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
+		MealNo2_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
+		MealNo2_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
+		MealNo2_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
+		MealNo3_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
+		MealNo3_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
+		MealNo3_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
+		MealNo4_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
+		MealNo4_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
+		MealNo4_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
+		MealNo5_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
+		MealNo5_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
+		MealNo5_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
 
-		TXTPosilek1W.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek1B.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek1T.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek2W.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek2B.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek2T.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek3W.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek3B.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek3T.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek4W.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek4B.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek4T.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek5W.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek5B.setBorder(new LineBorder(Color.BLUE, 1));
-		TXTPosilek5T.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo1_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo1_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo1_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo2_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo2_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo2_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo3_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo3_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo3_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo4_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo4_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo4_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo5_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo5_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
+		MealNo5_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
 
-		TXTPosilek1W.setBackground(new Color(204, 255, 255));
-		TXTPosilek1B.setBackground(new Color(204, 255, 255));
-		TXTPosilek1T.setBackground(new Color(204, 255, 255));
-		TXTPosilek2W.setBackground(new Color(204, 255, 255));
-		TXTPosilek2B.setBackground(new Color(204, 255, 255));
-		TXTPosilek2T.setBackground(new Color(204, 255, 255));
-		TXTPosilek3W.setBackground(new Color(204, 255, 255));
-		TXTPosilek3B.setBackground(new Color(204, 255, 255));
-		TXTPosilek3T.setBackground(new Color(204, 255, 255));
-		TXTPosilek4W.setBackground(new Color(204, 255, 255));
-		TXTPosilek4B.setBackground(new Color(204, 255, 255));
-		TXTPosilek4T.setBackground(new Color(204, 255, 255));
-		TXTPosilek5W.setBackground(new Color(204, 255, 255));
-		TXTPosilek5B.setBackground(new Color(204, 255, 255));
-		TXTPosilek5T.setBackground(new Color(204, 255, 255));
+		MealNo1_TF_Carbo.setBackground(new Color(204, 255, 255));
+		MealNo1_TF_Whey.setBackground(new Color(204, 255, 255));
+		MealNo1_TF_Fats.setBackground(new Color(204, 255, 255));
+		MealNo2_TF_Carbo.setBackground(new Color(204, 255, 255));
+		MealNo2_TF_Whey.setBackground(new Color(204, 255, 255));
+		MealNo2_TF_Fats.setBackground(new Color(204, 255, 255));
+		MealNo3_TF_Carbo.setBackground(new Color(204, 255, 255));
+		MealNo3_TF_Whey.setBackground(new Color(204, 255, 255));
+		MealNo3_TF_Fats.setBackground(new Color(204, 255, 255));
+		MealNo4_TF_Carbo.setBackground(new Color(204, 255, 255));
+		MealNo4_TF_Whey.setBackground(new Color(204, 255, 255));
+		MealNo4_TF_Fats.setBackground(new Color(204, 255, 255));
+		MealNo5_TF_Carbo.setBackground(new Color(204, 255, 255));
+		MealNo5_TF_Whey.setBackground(new Color(204, 255, 255));
+		MealNo5_TF_Fats.setBackground(new Color(204, 255, 255));
 
-		TXTPosilek1W.setEnabled(false);
-		TXTPosilek1B.setEnabled(false);
-		TXTPosilek1T.setEnabled(false);
-		TXTPosilek2W.setEnabled(false);
-		TXTPosilek2B.setEnabled(false);
-		TXTPosilek2T.setEnabled(false);
-		TXTPosilek3W.setEnabled(false);
-		TXTPosilek3B.setEnabled(false);
-		TXTPosilek3T.setEnabled(false);
-		TXTPosilek4W.setEnabled(false);
-		TXTPosilek4B.setEnabled(false);
-		TXTPosilek4T.setEnabled(false);
-		TXTPosilek5W.setEnabled(false);
-		TXTPosilek5B.setEnabled(false);
-		TXTPosilek5T.setEnabled(false);
+		MealNo1_TF_Carbo.setEnabled(false);
+		MealNo1_TF_Whey.setEnabled(false);
+		MealNo1_TF_Fats.setEnabled(false);
+		MealNo2_TF_Carbo.setEnabled(false);
+		MealNo2_TF_Whey.setEnabled(false);
+		MealNo2_TF_Fats.setEnabled(false);
+		MealNo3_TF_Carbo.setEnabled(false);
+		MealNo3_TF_Whey.setEnabled(false);
+		MealNo3_TF_Fats.setEnabled(false);
+		MealNo4_TF_Carbo.setEnabled(false);
+		MealNo4_TF_Whey.setEnabled(false);
+		MealNo4_TF_Fats.setEnabled(false);
+		MealNo5_TF_Carbo.setEnabled(false);
+		MealNo5_TF_Whey.setEnabled(false);
+		MealNo5_TF_Fats.setEnabled(false);
 
-		panelEast2.add(Posilek1);
+		panelEast2.add(MealNo1);
 		panelEast2.add(Posilek1WBT);
 		panelEast2.add(panelEast2a);
-		panelEast2a.add(TXTPosilek1W);
-		panelEast2a.add(TXTPosilek1B);
-		panelEast2a.add(TXTPosilek1T);
+		panelEast2a.add(MealNo1_TF_Carbo);
+		panelEast2a.add(MealNo1_TF_Whey);
+		panelEast2a.add(MealNo1_TF_Fats);
 
-		panelEast3.add(Posilek2);
+		panelEast3.add(MealNo2);
 		panelEast3.add(Posilek2WBT);
 		panelEast3.add(panelEast3a);
-		panelEast3a.add(TXTPosilek2W);
-		panelEast3a.add(TXTPosilek2B);
-		panelEast3a.add(TXTPosilek2T);
+		panelEast3a.add(MealNo2_TF_Carbo);
+		panelEast3a.add(MealNo2_TF_Whey);
+		panelEast3a.add(MealNo2_TF_Fats);
 
-		panelEast4.add(Posilek3);
+		panelEast4.add(MealNo3);
 		panelEast4.add(Posilek3WBT);
 		panelEast4.add(panelEast4a);
-		panelEast4a.add(TXTPosilek3W);
-		panelEast4a.add(TXTPosilek3B);
-		panelEast4a.add(TXTPosilek3T);
+		panelEast4a.add(MealNo3_TF_Carbo);
+		panelEast4a.add(MealNo3_TF_Whey);
+		panelEast4a.add(MealNo3_TF_Fats);
 
-		panelEast5.add(Posilek4);
+		panelEast5.add(MealNo4);
 		panelEast5.add(Posilek4WBT);
 		panelEast5.add(panelEast5a);
-		panelEast5a.add(TXTPosilek4W);
-		panelEast5a.add(TXTPosilek4B);
-		panelEast5a.add(TXTPosilek4T);
+		panelEast5a.add(MealNo4_TF_Carbo);
+		panelEast5a.add(MealNo4_TF_Whey);
+		panelEast5a.add(MealNo4_TF_Fats);
 
-		panelEast6.add(Posilek5);
+		panelEast6.add(MealNo5);
 		panelEast6.add(Posilek5WBT);
 		panelEast6.add(panelEast6a);
-		panelEast6a.add(TXTPosilek5W);
-		panelEast6a.add(TXTPosilek5B);
-		panelEast6a.add(TXTPosilek5T);
-		
+		panelEast6a.add(MealNo5_TF_Carbo);
+		panelEast6a.add(MealNo5_TF_Whey);
+		panelEast6a.add(MealNo5_TF_Fats);
+
 		// Actions
-		
-		// Otwieranie nowego Okna z dodawaniem produktu
+
+		// Opening New Window - Add new Product to Database
 		ButtonAddNewProd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AddProductWindow nw = new AddProductWindow();
 				nw.NewWindow();
 			}
 		});
+
+		// Clear DailyProduct List
+		ButtonClearList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int decision = JOptionPane.showConfirmDialog(null,
+						"    Are you sure to Clear all daily products list ?", "Warning", JOptionPane.YES_NO_OPTION);
+				if (decision == 0) {
+					try {
+
+						dailyProducts.setDate(DateToday);
+
+						String myDriver = "org.gjt.mm.mysql.Driver";
+						String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+						Class.forName(myDriver);
+
+						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+
+						Statement st = conn.createStatement();
+
+						String ValuesSTR = "'" + dailyProducts.getDate() + "'";
+
+						st.executeUpdate("DELETE FROM `DailyProducts` WHERE `Date` = " + ValuesSTR);
+
+						conn.close();
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
+								deleteImage);
+					}
+				}
+			}
+		});
+
+		// Text Field Focus + Math macroelements
+		WeightTF.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				((JTextField) e.getSource()).selectAll();
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+			}
+		});
+
+		WeightTF.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyTyped(KeyEvent evt) {
+				char c = evt.getKeyChar();
+				if (!(Character.isDigit(c) || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE)
+						|| (c == KeyEvent.VK_PERIOD) || (c == KeyEvent.VK_COMMA))) {
+					evt.consume();
+				}
+				if (c == KeyEvent.VK_COMMA) {
+					evt.setKeyChar((char) KeyEvent.VK_PERIOD);
+				}
+				if (WeightTF.getText() != null && !WeightTF.getText().isEmpty() && !WeightTF.getText().equals("")) {
+					if (comboBox.getSelectedItem() != null && Double.parseDouble(WeightTF.getText()) != 0) {
+
+						String carbo = getDateFromDB("ProductCarbo", "safanlamel", "Products",
+								comboBox.getSelectedItem().toString());
+						String whey = getDateFromDB("ProductWhey", "safanlamel", "Products",
+								comboBox.getSelectedItem().toString());
+						String fats = getDateFromDB("ProductFats", "safanlamel", "Products",
+								comboBox.getSelectedItem().toString());
+
+						double carboDouble = Double.parseDouble(carbo);
+						double wheyDouble = Double.parseDouble(whey);
+						double fatsDouble = Double.parseDouble(fats);
+
+						double divWeight = (Double.parseDouble(WeightTF.getText())) / 100;
+
+						CarboTF.setText(String.format("%.2f", carboDouble * divWeight));
+						WheyTF.setText(String.format("%.2f", wheyDouble * divWeight));
+						FatsTF.setText(String.format("%.2f", fatsDouble * divWeight));
+
+						dailyProducts.setCarbo(Double.parseDouble(CarboTF.getText().replace(",", ".")));
+						dailyProducts.setWhey(Double.parseDouble(WheyTF.getText().replace(",", ".")));
+						dailyProducts.setFats(Double.parseDouble(FatsTF.getText().replace(",", ".")));
+
+						KcalTF.setText(String.valueOf(dailyProducts.getKcal()));
+					}
+				}
+			}
+		});
+
+		// Add Product to DailyProduct List
+		ButtonAddProd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (comboBox.getSelectedItem() != null) {
+
+					ProductID = Integer.parseInt(getDateFromDB("ProductID", "safanlamel", "Products",
+							comboBox.getSelectedItem().toString()));
+
+					dailyProducts.setCarbo(Double.parseDouble(CarboTF.getText().replace(",", ".")));
+					dailyProducts.setWhey(Double.parseDouble(WheyTF.getText().replace(",", ".")));
+					dailyProducts.setFats(Double.parseDouble(FatsTF.getText().replace(",", ".")));
+					dailyProducts.setWeight(Double.parseDouble(WeightTF.getText().replace(",", ".")));
+					dailyProducts.setMealNo(Integer.parseInt(comboBoxNr.getSelectedItem().toString()));
+
+					try {
+
+						String myDriver = "org.gjt.mm.mysql.Driver";
+						String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+						Class.forName(myDriver);
+
+						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+
+						Statement st = conn.createStatement();
+
+						String ValuesSTR = "'" + DateToday + "' , " + ProductID + " ," + dailyProducts.getCarbo() + ", "
+								+ dailyProducts.getWhey() + ", " + dailyProducts.getFats() + ", "
+								+ dailyProducts.getMealNo() + ", " + dailyProducts.getWeight();
+
+						st.executeUpdate("INSERT INTO DailyProducts (Date, ProductID, Carbo, Whey, Fat, MealNo, Weight)"
+								+ " VALUES (" + ValuesSTR + ")");
+
+						conn.close();
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
+								deleteImage);
+					}
+
+					finally {
+						WeightTF.setText("100");
+						CarboTF.setText("");
+						WheyTF.setText("");
+						FatsTF.setText("");
+					}
+				}
+			}
+		});
+	}
+
+	public String getDateFromDB(String Value, String Table, String ColumnName, String ProductName) {
+		try {
+
+			String myDriver = "org.gjt.mm.mysql.Driver";
+			String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+			Class.forName(myDriver);
+
+			Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+
+			Statement st = conn.createStatement();
+
+			ResultSet rs = st.executeQuery(
+					"SELECT * FROM " + Table + "." + ColumnName + " WHERE ProductName = '" + ProductName + "'");
+
+			while (rs.next()) {
+				DateFromDB = rs.getString(Value);
+			}
+
+			conn.close();
+
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
+					deleteImage);
+		}
+
+		return DateFromDB;
+	}
+
+	public void RefreshComboBox() {
+		try {
+
+			String myDriver = "org.gjt.mm.mysql.Driver";
+			String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+			Class.forName(myDriver);
+
+			Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+
+			Statement st = conn.createStatement();
+
+			ResultSet rs = st.executeQuery("SELECT * FROM safanlamel.Products");
+
+			while (rs.next()) {
+				String name = rs.getString("ProductName");
+				comboBox.addItem(name);
+			}
+			conn.close();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
+					deleteImage);
+		}
 	}
 }

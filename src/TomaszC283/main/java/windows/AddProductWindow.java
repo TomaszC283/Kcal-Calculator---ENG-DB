@@ -22,7 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
-
 import TomaszC283.main.java.Products;
 
 public class AddProductWindow {
@@ -33,11 +32,7 @@ public class AddProductWindow {
 	
 	// Icons
 	ImageIcon deleteImage = new ImageIcon("src/TomaszC283/main/java/resources/delete.png");
-	ImageIcon carrotImage = new ImageIcon("src/TomaszC283/main/java/resources/carrot.png");
 	ImageIcon plusImage = new ImageIcon("src/TomaszC283/main/java/resources/plus.png");
-	ImageIcon cancelImage = new ImageIcon("src/TomaszC283/main/java/resources/cancel.png");
-	ImageIcon upsImage = new ImageIcon("src/TomaszC283/main/java/resources/ups.png");
-	ImageIcon removeImage = new ImageIcon("src/TomaszC283/main/java/resources/remove.png");
 	
 	public void NewWindow() {
 		EventQueue.invokeLater(new Runnable() {
@@ -263,10 +258,10 @@ public class AddProductWindow {
 				{
 				if (products.getProductCarbo() == 0 || products.getProductWhey() == 0 || products.getProductFats() == 0)	
 				{
-					int decyzja = JOptionPane.showConfirmDialog(null,
+					int decision = JOptionPane.showConfirmDialog(null,
 							"    Are you sure, that one of Macroelements equals 0 ?", "Warning",
 							JOptionPane.YES_NO_OPTION);
-					if (decyzja == 0) {
+					if (decision == 0) {
 						AddProductToDB();
 					}
 				}
@@ -298,16 +293,18 @@ public class AddProductWindow {
 		try
 	    {
 	      String myDriver = "org.gjt.mm.mysql.Driver";
-	      String myUrl = "jdbc:mysql://localhost:3306/Kcal";
+	      String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
 	      Class.forName(myDriver);
 	      
-	      Connection conn = DriverManager.getConnection(myUrl, "root", "root123");
+	      Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
 	      
 	      Statement st = conn.createStatement();
+	      
+	      String ValuesSTR = products.getProductName() + "' , " + products.getProductCarbo() + ", " + products.getProductWhey() +", " + products.getProductFats();
 
-	      st.executeUpdate("INSERT INTO Products (ProductsName, ProductCarbo, ProductWhey, ProductFats)"
-	          + "VALUES (" + products.getProductName() + "," + products.getProductCarbo() + "," + products.getProductWhey() +"," + products.getProductFats() + ")");
-
+	      st.executeUpdate("INSERT INTO Products (ProductName, ProductCarbo, ProductWhey, ProductFats)"
+	          + " VALUES ('" + ValuesSTR + ")");
+	      
 	      conn.close(); 
 	    }
 			    

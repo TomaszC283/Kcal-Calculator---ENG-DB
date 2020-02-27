@@ -3,11 +3,12 @@ package TomaszC283.main.java;
 public class DailyProducts {
 
 	private int ID;
-	private String Data;
+	private String Date;
 	private int ProductID;
 	private double Carbo;
 	private double Whey;
-	private double Fat;
+	private double Fats;
+	@SuppressWarnings("unused")
 	private double Kcal;
 	private int MealNo;
 	private double Weight;
@@ -19,7 +20,7 @@ public class DailyProducts {
 		Weight = weight;
 	}
 	public double getKcal() {
-		return Kcal = ((Carbo+Whey)*4+(Fat*9))*(Weight/100);
+		return Kcal = ((Carbo+Whey)*4+(Fats*9));
 	}
 	public void setKcal(double kcal) {
 		Kcal = kcal;
@@ -30,11 +31,11 @@ public class DailyProducts {
 	public void setID(int iD) {
 		ID = iD;
 	}
-	public String getData() {
-		return Data;
+	public String getDate() {
+		return Date;
 	}
-	public void setData(String data) {
-		Data = data;
+	public void setDate(String date) {
+		Date = date;
 	}
 	public int getProductID() {
 		return ProductID;
@@ -54,11 +55,11 @@ public class DailyProducts {
 	public void setWhey(double whey) {
 		Whey = whey;
 	}
-	public double getFat() {
-		return Fat;
+	public double getFats() {
+		return Fats;
 	}
-	public void setFat(double fat) {
-		Fat = fat;
+	public void setFats(double fats) {
+		Fats = fats;
 	}
 	public int getMealNo() {
 		return MealNo;
