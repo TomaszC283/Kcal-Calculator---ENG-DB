@@ -3,6 +3,7 @@ package TomaszC283.main.java.windows;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -17,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,7 +32,12 @@ import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+
 import TomaszC283.main.java.DailyProducts;
+import TomaszC283.main.java.Products;
 import TomaszC283.main.java.windows.AddProductWindow;
 
 @SuppressWarnings("serial")
@@ -46,22 +53,6 @@ public class MainWindow extends JFrame {
 	private static JTextField TotalWheyTF = new JTextField(13);
 	private static JTextField TotalFatsTF = new JTextField(13);
 	private static JTextField TotalKcalTF = new JTextField(13);
-
-	private static JTextField MealNo1_TF_Carbo = new JTextField(6);
-	private static JTextField MealNo1_TF_Whey = new JTextField(6);
-	private static JTextField MealNo1_TF_Fats = new JTextField(6);
-	private static JTextField MealNo2_TF_Carbo = new JTextField(6);
-	private static JTextField MealNo2_TF_Whey = new JTextField(6);
-	private static JTextField MealNo2_TF_Fats = new JTextField(6);
-	private static JTextField MealNo3_TF_Carbo = new JTextField(6);
-	private static JTextField MealNo3_TF_Whey = new JTextField(6);
-	private static JTextField MealNo3_TF_Fats = new JTextField(6);
-	private static JTextField MealNo4_TF_Carbo = new JTextField(6);
-	private static JTextField MealNo4_TF_Whey = new JTextField(6);
-	private static JTextField MealNo4_TF_Fats = new JTextField(6);
-	private static JTextField MealNo5_TF_Carbo = new JTextField(6);
-	private static JTextField MealNo5_TF_Whey = new JTextField(6);
-	private static JTextField MealNo5_TF_Fats = new JTextField(6);
 
 	final JTextField WeightTF = new JTextField(9);
 	final JTextField CarboTF = new JTextField(9);
@@ -84,10 +75,17 @@ public class MainWindow extends JFrame {
 
 	// Products Class
 	private DailyProducts dailyProducts = new DailyProducts();
+	private Products products = new Products();
 	private String DateFromDB;
+	final DefaultTableModel model = new DefaultTableModel();
 
 	// Variables
-	private int ProductID;
+	private int NoOfMeal;
+	private double Weight;
+	private double Carbo;
+	private double Whey;
+	private double Fats;
+	double tempValue;
 
 	public MainWindow() {
 
@@ -101,14 +99,45 @@ public class MainWindow extends JFrame {
 		RefreshComboBox();
 
 		// Create JTable
-		String[] columnNames = { "Product Name", "No of Meal", "Weight", "Carbohydrates", "Proteins", "Fats" };
+		String[] columnNames = { "Product Name", "Meal", "Weight", "Carbohydrates", "Proteins", "Fats", "KCalories" };
+		
+		model.setColumnIdentifiers(columnNames);
+		model.fireTableDataChanged();
+		
+		final JTable tableList = new JTable() {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
 
-		Object[][] data = { {"","","","","","" } };
-
-		JTable tableList = new JTable(data, columnNames);
-		JScrollPane scrollPane = new JScrollPane(tableList);
+		
+		tableList.setModel(model);
+		tableList.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableList.setFillsViewportHeight(true);
-
+		
+		JScrollPane scroll = new JScrollPane(tableList);
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		tableList.setBackground(new Color(245, 255, 255));
+		tableList.setGridColor(Color.BLUE);
+		tableList.setForeground(Color.RED);
+		tableList.setFont(new Font("Serif", Font.PLAIN, 13));
+		
+		CheckDailyList();
+		
+		JTableHeader header = tableList.getTableHeader();
+		header.setBackground(new Color(255, 229, 255));
+		header.setForeground(Color.BLUE);
+		header.setFont(new Font("Serif", Font.BOLD, 13));
+		
+		for ( int i = 0; i < model.getColumnCount(); i++)
+		{
+			tableList.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
+		}
+		
 		// MainPanel
 
 		Container mainContainer = getContentPane();
@@ -121,7 +150,7 @@ public class MainWindow extends JFrame {
 		JButton ButtonClearList = new JButton("   Clear list   ", cancelImage);
 		JButton ButtonAddProd = new JButton("    Add       ", plusImage);
 		JButton ButtonDeleteProd = new JButton(" Remove Product from Database  ", deleteImage);
-		JButton ButtonRemoveProd = new JButton("    Remove Product from list  ", removeImage);
+		JButton ButtonRemoveProd = new JButton("    Remove Meal from list  ", removeImage);
 
 		ButtonAddNewProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		ButtonClearList.setBorder(new LineBorder(new Color(48, 213, 200), 2));
@@ -283,7 +312,7 @@ public class MainWindow extends JFrame {
 		mainContainer.add(middlePanel);
 		middlePanel.setBorder(new LineBorder(new Color(48, 213, 200), 3));
 		middlePanel.setLayout(new BorderLayout());
-		middlePanel.add(scrollPane, BorderLayout.CENTER);
+		middlePanel.add(scroll, BorderLayout.CENTER);
 		middlePanel.add(KcalSlider, BorderLayout.SOUTH);
 
 		// Bottom Panel
@@ -373,188 +402,99 @@ public class MainWindow extends JFrame {
 
 		// East Panel
 		JPanel panelEast1 = new JPanel();
-		JPanel panelEast2 = new JPanel();
-		JPanel panelEast2a = new JPanel();
-		JPanel panelEast3 = new JPanel();
-		JPanel panelEast3a = new JPanel();
-		JPanel panelEast4 = new JPanel();
-		JPanel panelEast4a = new JPanel();
-		JPanel panelEast5 = new JPanel();
-		JPanel panelEast5a = new JPanel();
-		JPanel panelEast6 = new JPanel();
-		JPanel panelEast6a = new JPanel();
-
 		panelEast1.setBorder(new LineBorder(new Color(48, 213, 200), 3));
-
 		panelEast1.setBackground(new Color(245, 255, 255));
-		panelEast2.setBackground(new Color(245, 255, 255));
-		panelEast3.setBackground(new Color(245, 255, 255));
-		panelEast4.setBackground(new Color(245, 255, 255));
-		panelEast5.setBackground(new Color(245, 255, 255));
-		panelEast6.setBackground(new Color(245, 255, 255));
-		panelEast2a.setBackground(new Color(245, 255, 255));
-		panelEast3a.setBackground(new Color(245, 255, 255));
-		panelEast4a.setBackground(new Color(245, 255, 255));
-		panelEast5a.setBackground(new Color(245, 255, 255));
-		panelEast6a.setBackground(new Color(245, 255, 255));
-
-		panelEast1.setLayout(new GridLayout(5, 1));
-		panelEast2.setLayout(new GridLayout(3, 1));
-		panelEast3.setLayout(new GridLayout(3, 1));
-		panelEast4.setLayout(new GridLayout(3, 1));
-		panelEast5.setLayout(new GridLayout(3, 1));
-		panelEast6.setLayout(new GridLayout(3, 1));
-		panelEast2a.setLayout(new GridLayout(1, 3));
-		panelEast3a.setLayout(new GridLayout(1, 3));
-		panelEast4a.setLayout(new GridLayout(1, 3));
-		panelEast5a.setLayout(new GridLayout(1, 3));
-		panelEast6a.setLayout(new GridLayout(1, 3));
 
 		mainContainer.add(panelEast1, BorderLayout.EAST);
-		panelEast1.add(panelEast2);
-		panelEast1.add(panelEast3);
-		panelEast1.add(panelEast4);
-		panelEast1.add(panelEast5);
-		panelEast1.add(panelEast6);
-
-		JLabel MealNo1 = new JLabel("                         Meal No 1                          ");
-		JLabel MealNo2 = new JLabel("                         Meal No 2                          ");
-		JLabel MealNo3 = new JLabel("                         Meal No 3                          ");
-		JLabel MealNo4 = new JLabel("                         Meal No 4                          ");
-		JLabel MealNo5 = new JLabel("                         Meal no 5                          ");
-		JLabel Posilek1WBT = new JLabel("          C                   W                    F  ");
-		JLabel Posilek2WBT = new JLabel("          C                   W                    F  ");
-		JLabel Posilek3WBT = new JLabel("          C                   W                    F  ");
-		JLabel Posilek4WBT = new JLabel("          C                   W                    F  ");
-		JLabel Posilek5WBT = new JLabel("          C                   W                    F  ");
-
-		MealNo1.setForeground(Color.BLUE);
-		MealNo2.setForeground(Color.BLUE);
-		MealNo3.setForeground(Color.BLUE);
-		MealNo4.setForeground(Color.BLUE);
-		MealNo5.setForeground(Color.BLUE);
-		Posilek1WBT.setForeground(Color.RED);
-		Posilek2WBT.setForeground(Color.RED);
-		Posilek3WBT.setForeground(Color.RED);
-		Posilek4WBT.setForeground(Color.RED);
-		Posilek5WBT.setForeground(Color.RED);
-
-		MealNo1_TF_Carbo.setDisabledTextColor(Color.BLUE);
-		MealNo1_TF_Whey.setDisabledTextColor(Color.BLUE);
-		MealNo1_TF_Fats.setDisabledTextColor(Color.BLUE);
-		MealNo2_TF_Carbo.setDisabledTextColor(Color.BLUE);
-		MealNo2_TF_Whey.setDisabledTextColor(Color.BLUE);
-		MealNo2_TF_Fats.setDisabledTextColor(Color.BLUE);
-		MealNo3_TF_Carbo.setDisabledTextColor(Color.BLUE);
-		MealNo3_TF_Whey.setDisabledTextColor(Color.BLUE);
-		MealNo3_TF_Fats.setDisabledTextColor(Color.BLUE);
-		MealNo4_TF_Carbo.setDisabledTextColor(Color.BLUE);
-		MealNo4_TF_Whey.setDisabledTextColor(Color.BLUE);
-		MealNo4_TF_Fats.setDisabledTextColor(Color.BLUE);
-		MealNo5_TF_Carbo.setDisabledTextColor(Color.BLUE);
-		MealNo5_TF_Whey.setDisabledTextColor(Color.BLUE);
-		MealNo5_TF_Fats.setDisabledTextColor(Color.BLUE);
-
-		MealNo1_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
-		MealNo1_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
-		MealNo1_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
-		MealNo2_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
-		MealNo2_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
-		MealNo2_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
-		MealNo3_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
-		MealNo3_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
-		MealNo3_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
-		MealNo4_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
-		MealNo4_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
-		MealNo4_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
-		MealNo5_TF_Carbo.setHorizontalAlignment(JTextField.CENTER);
-		MealNo5_TF_Whey.setHorizontalAlignment(JTextField.CENTER);
-		MealNo5_TF_Fats.setHorizontalAlignment(JTextField.CENTER);
-
-		MealNo1_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo1_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo1_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo2_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo2_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo2_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo3_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo3_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo3_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo4_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo4_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo4_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo5_TF_Carbo.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo5_TF_Whey.setBorder(new LineBorder(Color.BLUE, 1));
-		MealNo5_TF_Fats.setBorder(new LineBorder(Color.BLUE, 1));
-
-		MealNo1_TF_Carbo.setBackground(new Color(204, 255, 255));
-		MealNo1_TF_Whey.setBackground(new Color(204, 255, 255));
-		MealNo1_TF_Fats.setBackground(new Color(204, 255, 255));
-		MealNo2_TF_Carbo.setBackground(new Color(204, 255, 255));
-		MealNo2_TF_Whey.setBackground(new Color(204, 255, 255));
-		MealNo2_TF_Fats.setBackground(new Color(204, 255, 255));
-		MealNo3_TF_Carbo.setBackground(new Color(204, 255, 255));
-		MealNo3_TF_Whey.setBackground(new Color(204, 255, 255));
-		MealNo3_TF_Fats.setBackground(new Color(204, 255, 255));
-		MealNo4_TF_Carbo.setBackground(new Color(204, 255, 255));
-		MealNo4_TF_Whey.setBackground(new Color(204, 255, 255));
-		MealNo4_TF_Fats.setBackground(new Color(204, 255, 255));
-		MealNo5_TF_Carbo.setBackground(new Color(204, 255, 255));
-		MealNo5_TF_Whey.setBackground(new Color(204, 255, 255));
-		MealNo5_TF_Fats.setBackground(new Color(204, 255, 255));
-
-		MealNo1_TF_Carbo.setEnabled(false);
-		MealNo1_TF_Whey.setEnabled(false);
-		MealNo1_TF_Fats.setEnabled(false);
-		MealNo2_TF_Carbo.setEnabled(false);
-		MealNo2_TF_Whey.setEnabled(false);
-		MealNo2_TF_Fats.setEnabled(false);
-		MealNo3_TF_Carbo.setEnabled(false);
-		MealNo3_TF_Whey.setEnabled(false);
-		MealNo3_TF_Fats.setEnabled(false);
-		MealNo4_TF_Carbo.setEnabled(false);
-		MealNo4_TF_Whey.setEnabled(false);
-		MealNo4_TF_Fats.setEnabled(false);
-		MealNo5_TF_Carbo.setEnabled(false);
-		MealNo5_TF_Whey.setEnabled(false);
-		MealNo5_TF_Fats.setEnabled(false);
-
-		panelEast2.add(MealNo1);
-		panelEast2.add(Posilek1WBT);
-		panelEast2.add(panelEast2a);
-		panelEast2a.add(MealNo1_TF_Carbo);
-		panelEast2a.add(MealNo1_TF_Whey);
-		panelEast2a.add(MealNo1_TF_Fats);
-
-		panelEast3.add(MealNo2);
-		panelEast3.add(Posilek2WBT);
-		panelEast3.add(panelEast3a);
-		panelEast3a.add(MealNo2_TF_Carbo);
-		panelEast3a.add(MealNo2_TF_Whey);
-		panelEast3a.add(MealNo2_TF_Fats);
-
-		panelEast4.add(MealNo3);
-		panelEast4.add(Posilek3WBT);
-		panelEast4.add(panelEast4a);
-		panelEast4a.add(MealNo3_TF_Carbo);
-		panelEast4a.add(MealNo3_TF_Whey);
-		panelEast4a.add(MealNo3_TF_Fats);
-
-		panelEast5.add(MealNo4);
-		panelEast5.add(Posilek4WBT);
-		panelEast5.add(panelEast5a);
-		panelEast5a.add(MealNo4_TF_Carbo);
-		panelEast5a.add(MealNo4_TF_Whey);
-		panelEast5a.add(MealNo4_TF_Fats);
-
-		panelEast6.add(MealNo5);
-		panelEast6.add(Posilek5WBT);
-		panelEast6.add(panelEast6a);
-		panelEast6a.add(MealNo5_TF_Carbo);
-		panelEast6a.add(MealNo5_TF_Whey);
-		panelEast6a.add(MealNo5_TF_Fats);
 
 		// Actions
+
+		// Removing Row from Product Daily List
+		ButtonRemoveProd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				int decision = JOptionPane.showConfirmDialog(null,
+						"    Are you sure to remove selected Row from Today's meal list ?", "Warning",
+						JOptionPane.YES_NO_OPTION);
+				if (decision == 0) {
+					try {
+						int row = tableList.getSelectedRow();
+						dailyProducts.setDate(DateToday);
+						dailyProducts.setProductName(model.getValueAt(row, 0).toString());
+						dailyProducts.setID(Integer.parseInt(getDateFromDB("ID", "safanlamel", "DailyProducts", dailyProducts.getProductName())));
+						dailyProducts
+								.setMealNo(Integer.parseInt(model.getValueAt(row, 1).toString().replace("# ", "")));
+						dailyProducts
+								.setWeight(Double.parseDouble(model.getValueAt(row, 2).toString().replace(" g", "")));
+						dailyProducts
+								.setCarbo(Double.parseDouble(model.getValueAt(row, 3).toString()));
+						dailyProducts
+								.setWhey(Double.parseDouble(model.getValueAt(row, 4).toString()));
+						dailyProducts
+								.setFats(Double.parseDouble(model.getValueAt(row, 5).toString()));
+
+						String myDriver = "org.gjt.mm.mysql.Driver";
+						String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+						Class.forName(myDriver);
+
+						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+
+						Statement st = conn.createStatement();
+
+						st.executeUpdate(
+								"DELETE FROM `DailyProducts` WHERE ID = " + dailyProducts.getID() + " AND `ProductName` = '" + dailyProducts.getProductName()
+										+ "' AND `Date` = '" + DateToday + "' AND `Carbo` = " + dailyProducts.getCarbo()
+										+ " AND `Whey` = " + dailyProducts.getWhey() + " AND `Fat` = "
+										+ dailyProducts.getFats() + " AND `Weight` = " + dailyProducts.getWeight());
+
+						conn.close();
+
+						model.removeRow(row);
+
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
+								deleteImage);
+					}
+				}
+			}
+		});
+
+		// Removing Product from Products Database
+		ButtonDeleteProd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int decision = JOptionPane.showConfirmDialog(null,
+						"    Are you sure to remove " + comboBox.getSelectedItem().toString() + " from Database ?",
+						"Warning", JOptionPane.YES_NO_OPTION);
+				if (decision == 0) {
+					try {
+						products.setProductName(comboBox.getSelectedItem().toString());
+
+						String myDriver = "org.gjt.mm.mysql.Driver";
+						String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+						Class.forName(myDriver);
+
+						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+
+						Statement st = conn.createStatement();
+
+						String ValuesSTR = "'" + products.getProductName() + "'";
+
+						st.executeUpdate("DELETE FROM `Products` WHERE `ProductName` = " + ValuesSTR);
+
+						conn.close();
+
+						JOptionPane.showMessageDialog(null,
+								products.getProductName() + " successful deleted from Database", "Success!",
+								JOptionPane.INFORMATION_MESSAGE, deleteImage);
+
+						RefreshComboBox();
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
+								deleteImage);
+					}
+				}
+			}
+		});
 
 		// Opening New Window - Add new Product to Database
 		ButtonAddNewProd.addActionListener(new ActionListener() {
@@ -568,7 +508,7 @@ public class MainWindow extends JFrame {
 		ButtonClearList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int decision = JOptionPane.showConfirmDialog(null,
-						"    Are you sure to Clear all daily products list ?", "Warning", JOptionPane.YES_NO_OPTION);
+						"    Are you sure you want to clear today's meal list? ", "Warning", JOptionPane.YES_NO_OPTION);
 				if (decision == 0) {
 					try {
 
@@ -587,6 +527,13 @@ public class MainWindow extends JFrame {
 						st.executeUpdate("DELETE FROM `DailyProducts` WHERE `Date` = " + ValuesSTR);
 
 						conn.close();
+
+						model.setRowCount(0);
+						TotalCarboTF.setText("");
+						TotalWheyTF.setText("");
+						TotalFatsTF.setText("");
+						TotalKcalTF.setText("");
+
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 								deleteImage);
@@ -652,7 +599,7 @@ public class MainWindow extends JFrame {
 						dailyProducts.setWhey(Double.parseDouble(WheyTF.getText().replace(",", ".")));
 						dailyProducts.setFats(Double.parseDouble(FatsTF.getText().replace(",", ".")));
 
-						KcalTF.setText(String.valueOf(dailyProducts.getKcal()));
+						KcalTF.setText(String.format("%.2f", dailyProducts.getKcal()));
 					}
 				}
 			}
@@ -663,9 +610,7 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (comboBox.getSelectedItem() != null) {
 
-					ProductID = Integer.parseInt(getDateFromDB("ProductID", "safanlamel", "Products",
-							comboBox.getSelectedItem().toString()));
-
+					dailyProducts.setProductName(comboBox.getSelectedItem().toString());
 					dailyProducts.setCarbo(Double.parseDouble(CarboTF.getText().replace(",", ".")));
 					dailyProducts.setWhey(Double.parseDouble(WheyTF.getText().replace(",", ".")));
 					dailyProducts.setFats(Double.parseDouble(FatsTF.getText().replace(",", ".")));
@@ -682,12 +627,14 @@ public class MainWindow extends JFrame {
 
 						Statement st = conn.createStatement();
 
-						String ValuesSTR = "'" + DateToday + "' , " + ProductID + " ," + dailyProducts.getCarbo() + ", "
-								+ dailyProducts.getWhey() + ", " + dailyProducts.getFats() + ", "
-								+ dailyProducts.getMealNo() + ", " + dailyProducts.getWeight();
+						String ValuesSTR = "'" + DateToday + "' , '" + dailyProducts.getProductName() + "' ,"
+								+ dailyProducts.getCarbo() + ", " + dailyProducts.getWhey() + ", "
+								+ dailyProducts.getFats() + ", " + dailyProducts.getMealNo() + ", "
+								+ dailyProducts.getWeight();
 
-						st.executeUpdate("INSERT INTO DailyProducts (Date, ProductID, Carbo, Whey, Fat, MealNo, Weight)"
-								+ " VALUES (" + ValuesSTR + ")");
+						st.executeUpdate(
+								"INSERT INTO DailyProducts (Date, ProductName, Carbo, Whey, Fat, MealNo, Weight)"
+										+ " VALUES (" + ValuesSTR + ")");
 
 						conn.close();
 					} catch (Exception ex) {
@@ -696,17 +643,40 @@ public class MainWindow extends JFrame {
 					}
 
 					finally {
+
+						String[] dateCurrentDay = new String[7];
+
+						dateCurrentDay[0] = comboBox.getSelectedItem().toString();
+
+						dateCurrentDay[1] = "# " + String.valueOf(dailyProducts.getMealNo());
+
+						dateCurrentDay[2] = String.valueOf(Math.round(dailyProducts.getWeight())) + " g";
+
+						dateCurrentDay[3] = String.valueOf(dailyProducts.getCarbo());
+
+						dateCurrentDay[4] = String.valueOf(dailyProducts.getWhey());
+
+						dateCurrentDay[5] = String.valueOf(dailyProducts.getFats());
+
+						dateCurrentDay[6] = String
+								.valueOf(Math.round(((dailyProducts.getCarbo() + dailyProducts.getWhey()) * 4)
+										+ dailyProducts.getFats() * 9));
+
+						model.addRow(dateCurrentDay);
+
 						WeightTF.setText("100");
 						CarboTF.setText("");
 						WheyTF.setText("");
 						FatsTF.setText("");
+						KcalTF.setText("");
+						RefreshSummaryPanel();
 					}
 				}
 			}
 		});
 	}
 
-	public String getDateFromDB(String Value, String Table, String ColumnName, String ProductName) {
+	private String getDateFromDB(String Value, String Table, String ColumnName, String ProductName) {
 		try {
 
 			String myDriver = "org.gjt.mm.mysql.Driver";
@@ -734,7 +704,7 @@ public class MainWindow extends JFrame {
 		return DateFromDB;
 	}
 
-	public void RefreshComboBox() {
+	private void RefreshComboBox() {
 		try {
 
 			String myDriver = "org.gjt.mm.mysql.Driver";
@@ -747,11 +717,85 @@ public class MainWindow extends JFrame {
 
 			ResultSet rs = st.executeQuery("SELECT * FROM safanlamel.Products");
 
+			comboBox.removeAllItems();
+
 			while (rs.next()) {
 				String name = rs.getString("ProductName");
 				comboBox.addItem(name);
 			}
 			conn.close();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
+					deleteImage);
+		}
+	}
+
+	private void RefreshSummaryPanel() {
+
+		for (int count = 0; count < model.getRowCount(); count++) {
+			dailyProducts.setCarbo(Double.parseDouble(model.getValueAt(count, 3).toString()));
+			tempValue = tempValue + dailyProducts.getCarbo();
+		}
+		TotalCarboTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
+
+		for (int count = 0; count < model.getRowCount(); count++) {
+			dailyProducts.setWhey(Double.parseDouble(model.getValueAt(count, 4).toString()));
+			tempValue = tempValue + dailyProducts.getWhey();
+		}
+		TotalWheyTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
+
+		for (int count = 0; count < model.getRowCount(); count++) {
+			dailyProducts.setFats(Double.parseDouble(model.getValueAt(count, 5).toString()));
+			tempValue = tempValue + dailyProducts.getFats();
+		}
+		TotalFatsTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
+
+		for (int count = 0; count < model.getRowCount(); count++) {
+			dailyProducts.setKcal(Double.parseDouble(model.getValueAt(count, 6).toString()));
+			tempValue = tempValue + dailyProducts.getKcal();
+		}
+		TotalKcalTF.setText(String.valueOf(Math.round(tempValue)));
+	}
+
+	private void CheckDailyList() {
+		try {
+
+			String myDriver = "org.gjt.mm.mysql.Driver";
+			String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+			Class.forName(myDriver);
+
+			Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery("SELECT * FROM safanlamel.DailyProducts WHERE `Date` = '" + DateToday + "'");
+
+			while (rs.next()) {
+
+				Object[] dateCurrentDay = new String[7];
+
+				dateCurrentDay[0] = rs.getString("ProductName");
+
+				NoOfMeal = rs.getInt("MealNo");
+				dateCurrentDay[1] = "# " + String.valueOf(NoOfMeal);
+
+				Weight = rs.getDouble("Weight");
+				dateCurrentDay[2] = String.valueOf(Math.round(Weight)) + " g";
+
+				Carbo = rs.getDouble("Carbo");
+				dateCurrentDay[3] = String.valueOf(Carbo);
+
+				Whey = rs.getDouble("Whey");
+				dateCurrentDay[4] = String.valueOf(Whey);
+
+				Fats = rs.getDouble("Fat");
+				dateCurrentDay[5] = String.valueOf(Fats);
+
+				dateCurrentDay[6] = String.valueOf(Math.round(((Carbo + Whey) * 4) + Fats * 9));
+
+				model.addRow(dateCurrentDay);
+			}
+			conn.close();
+			RefreshSummaryPanel();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 					deleteImage);

@@ -4,7 +4,7 @@ public class DailyProducts {
 
 	private int ID;
 	private String Date;
-	private int ProductID;
+	private String ProductName;
 	private double Carbo;
 	private double Whey;
 	private double Fats;
@@ -37,11 +37,11 @@ public class DailyProducts {
 	public void setDate(String date) {
 		Date = date;
 	}
-	public int getProductID() {
-		return ProductID;
+	public String getProductName() {
+		return ProductName;
 	}
-	public void setProductID(int productID) {
-		ProductID = productID;
+	public void setProductName(String productName) {
+		ProductName = productName;
 	}
 	public double getCarbo() {
 		return Carbo;
