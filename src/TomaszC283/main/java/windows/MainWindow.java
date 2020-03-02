@@ -3,7 +3,6 @@ package TomaszC283.main.java.windows;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -39,6 +38,12 @@ import javax.swing.table.JTableHeader;
 import TomaszC283.main.java.DailyProducts;
 import TomaszC283.main.java.Products;
 import TomaszC283.main.java.windows.AddProductWindow;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.VBox;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -54,6 +59,8 @@ public class MainWindow extends JFrame {
 	private static JTextField TotalFatsTF = new JTextField(13);
 	private static JTextField TotalKcalTF = new JTextField(13);
 
+
+	
 	final JTextField WeightTF = new JTextField(9);
 	final JTextField CarboTF = new JTextField(9);
 	final JTextField WheyTF = new JTextField(9);
@@ -67,6 +74,7 @@ public class MainWindow extends JFrame {
 	ImageIcon cancelImage = new ImageIcon("src/TomaszC283/main/java/resources/cancel.png");
 	ImageIcon upsImage = new ImageIcon("src/TomaszC283/main/java/resources/ups.png");
 	ImageIcon removeImage = new ImageIcon("src/TomaszC283/main/java/resources/remove.png");
+	ImageIcon statisticsImage = new ImageIcon("src/TomaszC283/main/java/resources/statistics.png");
 
 	// Date today
 	SimpleDateFormat date_sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -78,6 +86,7 @@ public class MainWindow extends JFrame {
 	private Products products = new Products();
 	private String DateFromDB;
 	final DefaultTableModel model = new DefaultTableModel();
+	final JFXPanel fxPanel = new JFXPanel();
 
 	// Variables
 	private int NoOfMeal;
@@ -90,7 +99,7 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 
 		super("Fitness Calculator");
-		setSize(1100, 600);
+		setSize(1300, 600);
 		setLocation(100, 100);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
@@ -126,6 +135,11 @@ public class MainWindow extends JFrame {
 		tableList.setForeground(Color.RED);
 		tableList.setFont(new Font("Serif", Font.PLAIN, 13));
 		
+		TotalCarboTF.setText("0");
+		TotalWheyTF.setText("0");
+		TotalFatsTF.setText("0");
+		TotalKcalTF.setText("0");
+		
 		CheckDailyList();
 		
 		JTableHeader header = tableList.getTableHeader();
@@ -151,18 +165,21 @@ public class MainWindow extends JFrame {
 		JButton ButtonAddProd = new JButton("    Add       ", plusImage);
 		JButton ButtonDeleteProd = new JButton(" Remove Product from Database  ", deleteImage);
 		JButton ButtonRemoveProd = new JButton("    Remove Meal from list  ", removeImage);
+		JButton ButtonStatistics = new JButton("       Statistics review       ", statisticsImage);
 
 		ButtonAddNewProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		ButtonClearList.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		ButtonAddProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		ButtonDeleteProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 		ButtonRemoveProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-
+		ButtonStatistics.setBorder(new LineBorder(new Color(48, 213, 200), 2));
+		
 		ButtonAddNewProd.setBackground(new Color(255, 229, 255));
 		ButtonClearList.setBackground(new Color(255, 229, 255));
 		ButtonAddProd.setBackground(new Color(255, 229, 255));
 		ButtonDeleteProd.setBackground(new Color(255, 229, 255));
 		ButtonRemoveProd.setBackground(new Color(255, 229, 255));
+		ButtonStatistics.setBackground(new Color(255, 229, 255));
 
 		// Top Panel
 
@@ -309,6 +326,8 @@ public class MainWindow extends JFrame {
 		KcalSlider.setBackground(new Color(245, 255, 255));
 		KcalSlider.setFont(new Font("Helvetica", Font.ITALIC, 11));
 
+
+		
 		mainContainer.add(middlePanel);
 		middlePanel.setBorder(new LineBorder(new Color(48, 213, 200), 3));
 		middlePanel.setLayout(new BorderLayout());
@@ -406,10 +425,18 @@ public class MainWindow extends JFrame {
 		panelEast1.setBackground(new Color(245, 255, 255));
 
 		mainContainer.add(panelEast1, BorderLayout.EAST);
-
+		fxPanel.setBackground(new Color(245, 255, 255));
+		panelEast1.setLayout(new BorderLayout());
+		panelEast1.add(fxPanel, BorderLayout.CENTER);
+		
+		JPanel statsPanel = new JPanel(); 
+		statsPanel.setBackground(new Color(245, 255, 255));
+		statsPanel.add(ButtonStatistics);
+		panelEast1.add(statsPanel, BorderLayout.SOUTH);
+		
 		// Actions
 
-		// Removing Row from Product Daily List
+		// Removing meal from Today's Meal List
 		ButtonRemoveProd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -451,6 +478,8 @@ public class MainWindow extends JFrame {
 
 						model.removeRow(row);
 
+						RefreshSummaryPanel();	
+						
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 								deleteImage);
@@ -504,7 +533,14 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		// Clear DailyProduct List
+		// Opening New Window - Statistics review
+		ButtonStatistics.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Statistics nw = new Statistics();
+				nw.NewWindow();
+			}
+		});
+		// Clear Today's Meal List
 		ButtonClearList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int decision = JOptionPane.showConfirmDialog(null,
@@ -737,24 +773,44 @@ public class MainWindow extends JFrame {
 			tempValue = tempValue + dailyProducts.getCarbo();
 		}
 		TotalCarboTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
-
+		tempValue = 0;
+		
 		for (int count = 0; count < model.getRowCount(); count++) {
 			dailyProducts.setWhey(Double.parseDouble(model.getValueAt(count, 4).toString()));
 			tempValue = tempValue + dailyProducts.getWhey();
 		}
 		TotalWheyTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
-
+		tempValue = 0;
+		
 		for (int count = 0; count < model.getRowCount(); count++) {
 			dailyProducts.setFats(Double.parseDouble(model.getValueAt(count, 5).toString()));
 			tempValue = tempValue + dailyProducts.getFats();
 		}
 		TotalFatsTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
-
+		tempValue = 0;
+		
 		for (int count = 0; count < model.getRowCount(); count++) {
 			dailyProducts.setKcal(Double.parseDouble(model.getValueAt(count, 6).toString()));
 			tempValue = tempValue + dailyProducts.getKcal();
 		}
 		TotalKcalTF.setText(String.valueOf(Math.round(tempValue)));
+		tempValue = 0;
+		
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				initFX(fxPanel);
+			}
+		});
+		
+		// Slider
+		KcalSlider.setValue((int) Math.round(Double.parseDouble(TotalKcalTF.getText())));
+		if (Double.parseDouble(TotalKcalTF.getText()) >= 3000) {
+			KcalSlider.setMaximum(5000);
+		}
+		if (KcalSlider.getValue() > 2000)
+			JOptionPane.showMessageDialog(null, "2000 KCalories exceeded :-)!", "Ups...!",
+					JOptionPane.INFORMATION_MESSAGE, upsImage);
 	}
 
 	private void CheckDailyList() {
@@ -800,5 +856,32 @@ public class MainWindow extends JFrame {
 			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 					deleteImage);
 		}
+	}
+	
+	private static void initFX(JFXPanel fxPanel) {
+		Scene scene = createScene((int) Math.round(Double.parseDouble(TotalCarboTF.getText())), (int) Math.round(Double.parseDouble(TotalWheyTF.getText())), (int) Math.round(Double.parseDouble(TotalFatsTF.getText())));
+		fxPanel.setScene(scene);
+	}
+	
+	private static Scene createScene(int Carbo, int Whey, int Fats) {
+		
+	        PieChart pieChart = new PieChart();
+
+	        PieChart.Data slice1 = new PieChart.Data("Carbos " + Carbo + " g", Carbo);
+	        PieChart.Data slice2 = new PieChart.Data("Proteins " + Whey + " g", Whey);
+	        PieChart.Data slice3 = new PieChart.Data("Fats " + Fats + " g", Fats);
+
+	        pieChart.getData().add(slice1);
+	        pieChart.getData().add(slice2);
+	        pieChart.getData().add(slice3);
+
+	        pieChart.setLabelLineLength(15);
+	        
+	        VBox vbox = new VBox(pieChart);
+	        vbox.setBackground(Background.EMPTY);
+	        String style = "-fx-background-color: rgba(245,255,255,0.5); -fx-font-size: 1.2em;";
+	        vbox.setStyle(style);
+	        Scene scene = new Scene(vbox, 400, 300);        
+		return (scene);
 	}
 }
