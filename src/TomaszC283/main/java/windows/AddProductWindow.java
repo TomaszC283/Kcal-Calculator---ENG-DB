@@ -283,6 +283,7 @@ public class AddProductWindow {
 					WheyTF.setText("0");
 					FatsTF.setText("0");
 					AddSuccess = false;
+					MainWindow.RefreshComboBox();
 				}
 			}
 		});
@@ -293,7 +294,7 @@ public class AddProductWindow {
 		try
 	    {
 	      String myDriver = "org.gjt.mm.mysql.Driver";
-	      String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+	      String myUrl = "jdbc:mysql://localhost:3306/kcal";
 	      Class.forName(myDriver);
 	      
 	      Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");

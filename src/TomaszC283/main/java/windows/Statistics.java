@@ -55,7 +55,7 @@ public class Statistics {
 		// East panel - for graphs show with 4 checks box - Carbo/Whey/Fats/Kcal
 		// Top Panel - searchings conditions ( JComboBox with options -> Date from ->
 		// to, CheckBox to get only single Date or by ProductName )
-		// soring Menu ( Order By and ASC / DESC )
+		// sorting Menu ( Order By and ASC / DESC )
 		// Main Panel - JTable to view Data
 
 		JPanel mainContainer = new JPanel();
@@ -186,14 +186,14 @@ public class Statistics {
 		try {
 
 			String myDriver = "org.gjt.mm.mysql.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+			String myUrl = "jdbc:mysql://localhost:3306/kcal";
 			Class.forName(myDriver);
 
 			Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
 
 			Statement st = conn.createStatement();
 
-			ResultSet rs = st.executeQuery("SELECT * FROM safanlamel.Products");
+			ResultSet rs = st.executeQuery("SELECT * FROM kcal.Products");
 
 			searchCB.removeAllItems();
 

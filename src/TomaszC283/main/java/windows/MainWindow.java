@@ -67,8 +67,8 @@ public class MainWindow extends JFrame {
 	final JTextField FatsTF = new JTextField(9);
 	final JTextField KcalTF = new JTextField(9);
 
-	// Icons
-	ImageIcon deleteImage = new ImageIcon("src/TomaszC283/main/java/resources/delete.png");
+	 // Icons
+	static ImageIcon deleteImage = new ImageIcon("src/TomaszC283/main/java/resources/delete.png");
 	ImageIcon carrotImage = new ImageIcon("src/TomaszC283/main/java/resources/carrot.png");
 	ImageIcon plusImage = new ImageIcon("src/TomaszC283/main/java/resources/plus.png");
 	ImageIcon cancelImage = new ImageIcon("src/TomaszC283/main/java/resources/cancel.png");
@@ -448,7 +448,7 @@ public class MainWindow extends JFrame {
 						int row = tableList.getSelectedRow();
 						dailyProducts.setDate(DateToday);
 						dailyProducts.setProductName(model.getValueAt(row, 0).toString());
-						dailyProducts.setID(Integer.parseInt(getDateFromDB("ID", "safanlamel", "DailyProducts", dailyProducts.getProductName())));
+						dailyProducts.setID(Integer.parseInt(getDateFromDB("ID", "kcal", "DailyProducts", dailyProducts.getProductName())));
 						dailyProducts
 								.setMealNo(Integer.parseInt(model.getValueAt(row, 1).toString().replace("# ", "")));
 						dailyProducts
@@ -461,7 +461,7 @@ public class MainWindow extends JFrame {
 								.setFats(Double.parseDouble(model.getValueAt(row, 5).toString()));
 
 						String myDriver = "org.gjt.mm.mysql.Driver";
-						String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+						String myUrl = "jdbc:mysql://localhost:3306/kcal";
 						Class.forName(myDriver);
 
 						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
@@ -471,7 +471,7 @@ public class MainWindow extends JFrame {
 						st.executeUpdate(
 								"DELETE FROM `DailyProducts` WHERE ID = " + dailyProducts.getID() + " AND `ProductName` = '" + dailyProducts.getProductName()
 										+ "' AND `Date` = '" + DateToday + "' AND `Carbo` = " + dailyProducts.getCarbo()
-										+ " AND `Whey` = " + dailyProducts.getWhey() + " AND `Fat` = "
+										+ " AND `Whey` = " + dailyProducts.getWhey() + " AND `Fats` = "
 										+ dailyProducts.getFats() + " AND `Weight` = " + dailyProducts.getWeight());
 
 						conn.close();
@@ -499,7 +499,7 @@ public class MainWindow extends JFrame {
 						products.setProductName(comboBox.getSelectedItem().toString());
 
 						String myDriver = "org.gjt.mm.mysql.Driver";
-						String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+						String myUrl = "jdbc:mysql://localhost:3306/kcal";
 						Class.forName(myDriver);
 
 						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
@@ -551,7 +551,7 @@ public class MainWindow extends JFrame {
 						dailyProducts.setDate(DateToday);
 
 						String myDriver = "org.gjt.mm.mysql.Driver";
-						String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+						String myUrl = "jdbc:mysql://localhost:3306/kcal";
 						Class.forName(myDriver);
 
 						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
@@ -614,11 +614,11 @@ public class MainWindow extends JFrame {
 				if (WeightTF.getText() != null && !WeightTF.getText().isEmpty() && !WeightTF.getText().equals("")) {
 					if (comboBox.getSelectedItem() != null && Double.parseDouble(WeightTF.getText()) != 0) {
 
-						String carbo = getDateFromDB("ProductCarbo", "safanlamel", "Products",
+						String carbo = getDateFromDB("ProductCarbo", "kcal", "Products",
 								comboBox.getSelectedItem().toString());
-						String whey = getDateFromDB("ProductWhey", "safanlamel", "Products",
+						String whey = getDateFromDB("ProductWhey", "kcal", "Products",
 								comboBox.getSelectedItem().toString());
-						String fats = getDateFromDB("ProductFats", "safanlamel", "Products",
+						String fats = getDateFromDB("ProductFats", "kcal", "Products",
 								comboBox.getSelectedItem().toString());
 
 						double carboDouble = Double.parseDouble(carbo);
@@ -656,7 +656,7 @@ public class MainWindow extends JFrame {
 					try {
 
 						String myDriver = "org.gjt.mm.mysql.Driver";
-						String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+						String myUrl = "jdbc:mysql://localhost:3306/kcal";
 						Class.forName(myDriver);
 
 						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
@@ -669,7 +669,7 @@ public class MainWindow extends JFrame {
 								+ dailyProducts.getWeight();
 
 						st.executeUpdate(
-								"INSERT INTO DailyProducts (Date, ProductName, Carbo, Whey, Fat, MealNo, Weight)"
+								"INSERT INTO DailyProducts (Date, ProductName, Carbo, Whey, Fats, MealNo, Weight)"
 										+ " VALUES (" + ValuesSTR + ")");
 
 						conn.close();
@@ -716,7 +716,7 @@ public class MainWindow extends JFrame {
 		try {
 
 			String myDriver = "org.gjt.mm.mysql.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+			String myUrl = "jdbc:mysql://localhost:3306/kcal";
 			Class.forName(myDriver);
 
 			Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
@@ -740,18 +740,18 @@ public class MainWindow extends JFrame {
 		return DateFromDB;
 	}
 
-	private void RefreshComboBox() {
+	static void RefreshComboBox() {
 		try {
 
 			String myDriver = "org.gjt.mm.mysql.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+			String myUrl = "jdbc:mysql://localhost:3306/kcal";
 			Class.forName(myDriver);
 
 			Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
 
 			Statement st = conn.createStatement();
 
-			ResultSet rs = st.executeQuery("SELECT * FROM safanlamel.Products");
+			ResultSet rs = st.executeQuery("SELECT * FROM kcal.Products");
 
 			comboBox.removeAllItems();
 
@@ -817,13 +817,13 @@ public class MainWindow extends JFrame {
 		try {
 
 			String myDriver = "org.gjt.mm.mysql.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/safanlamel";
+			String myUrl = "jdbc:mysql://localhost:3306/kcal";
 			Class.forName(myDriver);
 
 			Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
 
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM safanlamel.DailyProducts WHERE `Date` = '" + DateToday + "'");
+			ResultSet rs = st.executeQuery("SELECT * FROM kcal.DailyProducts WHERE `Date` = '" + DateToday + "'");
 
 			while (rs.next()) {
 
@@ -843,7 +843,7 @@ public class MainWindow extends JFrame {
 				Whey = rs.getDouble("Whey");
 				dateCurrentDay[4] = String.valueOf(Whey);
 
-				Fats = rs.getDouble("Fat");
+				Fats = rs.getDouble("Fats");
 				dateCurrentDay[5] = String.valueOf(Fats);
 
 				dateCurrentDay[6] = String.valueOf(Math.round(((Carbo + Whey) * 4) + Fats * 9));
@@ -866,7 +866,7 @@ public class MainWindow extends JFrame {
 	private static Scene createScene(int Carbo, int Whey, int Fats) {
 		
 	        PieChart pieChart = new PieChart();
-
+	        
 	        PieChart.Data slice1 = new PieChart.Data("Carbos " + Carbo + " g", Carbo);
 	        PieChart.Data slice2 = new PieChart.Data("Proteins " + Whey + " g", Whey);
 	        PieChart.Data slice3 = new PieChart.Data("Fats " + Fats + " g", Fats);
