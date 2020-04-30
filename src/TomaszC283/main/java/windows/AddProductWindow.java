@@ -29,10 +29,12 @@ public class AddProductWindow {
 	private JFrame dpFrame;
 	Products products = new Products();
 	private boolean AddSuccess;
+	private JLabel backgroundLabel;
 	
 	// Icons
 	ImageIcon deleteImage = new ImageIcon("src/TomaszC283/main/java/resources/delete.png");
 	ImageIcon plusImage = new ImageIcon("src/TomaszC283/main/java/resources/plus.png");
+	ImageIcon background = new ImageIcon("src/TomaszC283/main/java/resources/add_product.jpg");
 	
 	public void NewWindow() {
 		EventQueue.invokeLater(new Runnable() {
@@ -50,45 +52,51 @@ public class AddProductWindow {
 	
 	AddProductWindow() {
 		
-		dpFrame = new JFrame("Adding new Product to List");
-		dpFrame.setBounds(200, 200, 400, 230);
+		dpFrame = new JFrame("Add new product to database");
+		dpFrame.setBounds(200, 200, 550, 434);
+		dpFrame.setResizable(false);
+		
+		backgroundLabel = new JLabel("", background, JLabel.CENTER);
+		backgroundLabel.setBounds(0,0,550,434);
+		backgroundLabel.setBorder(new LineBorder(Color.white, 4));
+		
+		dpFrame.add(backgroundLabel);
 		
 		JLabel ProductName = new JLabel("  Product name : ");
 		JLabel macroLabel = new JLabel("   Enter the amount of macroelements per 100g : ");
 		JLabel CarboMacro = new JLabel("  Carbohybrates : ");
-		JLabel WheyMacro = new JLabel("          Proteins : ");
-		JLabel FatsMacro = new JLabel("               Fats : ");
+		JLabel WheyMacro = new JLabel("       Proteins : ");
+		JLabel FatsMacro = new JLabel("         Fats : ");
 
 		final JTextField ProductNameTF = new JTextField(16);
 		final JTextField CarboTF = new JTextField(10);
 		final JTextField WheyTF = new JTextField(10);
 		final JTextField FatsTF = new JTextField(10);
 
-		ProductNameTF.setForeground(Color.RED);
-		CarboTF.setForeground(Color.RED);
-		WheyTF.setForeground(Color.RED);
-		FatsTF.setForeground(Color.RED);
+		ProductNameTF.setBackground(Color.WHITE);
+		CarboTF.setBackground(Color.WHITE);
+		WheyTF.setBackground(Color.WHITE);
+		FatsTF.setBackground(Color.WHITE);
+		
+		ProductNameTF.setForeground(Color.DARK_GRAY);
+		CarboTF.setForeground(Color.DARK_GRAY);
+		WheyTF.setForeground(Color.DARK_GRAY);
+		FatsTF.setForeground(Color.DARK_GRAY);
 
 		CarboTF.setText("0");
 		WheyTF.setText("0");
 		FatsTF.setText("0");
 
-		ProductNameTF.setBackground(new Color(204, 255, 255));
-		CarboTF.setBackground(new Color(204, 255, 255));
-		WheyTF.setBackground(new Color(204, 255, 255));
-		FatsTF.setBackground(new Color(204, 255, 255));
-
-		ProductNameTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		CarboTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		WheyTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		FatsTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
+		ProductNameTF.setBackground(Color.WHITE);
+		CarboTF.setBackground(Color.WHITE);
+		WheyTF.setBackground(Color.WHITE);
+		FatsTF.setBackground(Color.WHITE);
 
 		ProductNameTF.setHorizontalAlignment(JTextField.CENTER);
 		CarboTF.setHorizontalAlignment(JTextField.CENTER);
 		WheyTF.setHorizontalAlignment(JTextField.CENTER);
 		FatsTF.setHorizontalAlignment(JTextField.CENTER);
 
-		JPanel AuxTopPanel1 = new JPanel();
 		JPanel AuxTopPanel2 = new JPanel();
 		JPanel AuxTopPanel3 = new JPanel();
 		JPanel AuxTopPanel4 = new JPanel();
@@ -97,44 +105,47 @@ public class AddProductWindow {
 		JPanel AuxTopPanel4c = new JPanel();
 		JPanel AuxTopPanel5 = new JPanel();
 
-		AuxTopPanel1.setLayout(new GridLayout(4, 1));
+		backgroundLabel.setLayout(new GridLayout(6, 1));
 		AuxTopPanel4a.setLayout(new GridLayout(2, 1));
 		AuxTopPanel4b.setLayout(new GridLayout(2, 1));
 		AuxTopPanel4c.setLayout(new GridLayout(2, 1));
 
-		AuxTopPanel1.setBackground(new Color(245, 255, 255));
-		AuxTopPanel2.setBackground(new Color(245, 255, 255));
-		AuxTopPanel3.setBackground(new Color(245, 255, 255));
-		AuxTopPanel4.setBackground(new Color(245, 255, 255));
-		AuxTopPanel4a.setBackground(new Color(245, 255, 255));
-		AuxTopPanel4b.setBackground(new Color(245, 255, 255));
-		AuxTopPanel4c.setBackground(new Color(245, 255, 255));
-		AuxTopPanel5.setBackground(new Color(245, 255, 255));
+		JLabel paddingLabel1 = new JLabel("                          ");
+		JLabel paddingLabel2 = new JLabel("                          ");
+		
+		AuxTopPanel2.setOpaque(false);
+		AuxTopPanel3.setOpaque(false);
+		AuxTopPanel4.setOpaque(false);
+		AuxTopPanel4a.setOpaque(false);
+		AuxTopPanel4b.setOpaque(false);
+		AuxTopPanel4c.setOpaque(false);
+		AuxTopPanel5.setOpaque(false);
 
 		JButton AddButton = new JButton("   Add Product to Database      ", plusImage);
-		AddButton.setBackground(new Color(255, 229, 255));
-		AddButton.setBorder(new LineBorder(new Color(48, 213, 200), 2));
+		AddButton.setBackground(Color.DARK_GRAY);
+		AddButton.setForeground(Color.WHITE);
+		AddButton.setBorder(new LineBorder(Color.WHITE, 1));
+		AddButton.setFont(new Font("Dialog", Font.BOLD, 14));
 
-		AuxTopPanel1.setBorder(new LineBorder(new Color(48, 213, 200), 3));
+		ProductName.setFont(new Font("Dialog", Font.BOLD | Font.BOLD, 17));
+		macroLabel.setFont(new Font("Dialog", Font.BOLD | Font.BOLD, 17));
+		CarboMacro.setFont(new Font("Dialog", Font.BOLD, 16));
+		WheyMacro.setFont(new Font("Dialog", Font.BOLD, 16));
+		FatsMacro.setFont(new Font("Dialog", Font.BOLD, 16));
 
-		ProductName.setFont(new Font("Helvetica", Font.BOLD | Font.BOLD, 13));
-		macroLabel.setFont(new Font("Helvetica", Font.BOLD | Font.BOLD, 13));
-		CarboMacro.setFont(new Font("Helvetica", Font.BOLD, 12));
-		WheyMacro.setFont(new Font("Helvetica", Font.BOLD, 12));
-		FatsMacro.setFont(new Font("Helvetica", Font.BOLD, 12));
+		ProductName.setForeground(Color.DARK_GRAY);
+		macroLabel.setForeground(Color.DARK_GRAY);
+		CarboMacro.setForeground(Color.DARK_GRAY);
+		WheyMacro.setForeground(Color.DARK_GRAY);
+		FatsMacro.setForeground(Color.DARK_GRAY);
 
-		ProductName.setForeground(Color.RED);
-		macroLabel.setForeground(Color.RED);
-		CarboMacro.setForeground(Color.RED);
-		WheyMacro.setForeground(Color.RED);
-		FatsMacro.setForeground(Color.RED);
-
-		dpFrame.add(AuxTopPanel1);
-
-		AuxTopPanel1.add(AuxTopPanel2);
-		AuxTopPanel1.add(AuxTopPanel3);
-		AuxTopPanel1.add(AuxTopPanel4);
-		AuxTopPanel1.add(AuxTopPanel5);
+		backgroundLabel.add(paddingLabel1);
+		backgroundLabel.add(AuxTopPanel2);
+		backgroundLabel.add(AuxTopPanel3);
+		backgroundLabel.add(AuxTopPanel4);
+		backgroundLabel.add(AuxTopPanel5);
+		backgroundLabel.add(paddingLabel2);
+		
 		AuxTopPanel2.add(ProductName);
 		AuxTopPanel2.add(ProductNameTF);
 		AuxTopPanel3.add(macroLabel);

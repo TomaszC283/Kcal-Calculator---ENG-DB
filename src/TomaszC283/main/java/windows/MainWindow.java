@@ -2,7 +2,6 @@ package TomaszC283.main.java.windows;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -45,7 +44,6 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 
-@SuppressWarnings("serial")
 public class MainWindow extends JFrame {
 
 	// GUI
@@ -59,15 +57,13 @@ public class MainWindow extends JFrame {
 	private static JTextField TotalFatsTF = new JTextField(13);
 	private static JTextField TotalKcalTF = new JTextField(13);
 
-
-	
 	final JTextField WeightTF = new JTextField(9);
 	final JTextField CarboTF = new JTextField(9);
 	final JTextField WheyTF = new JTextField(9);
 	final JTextField FatsTF = new JTextField(9);
 	final JTextField KcalTF = new JTextField(9);
 
-	 // Icons
+	// Icons
 	static ImageIcon deleteImage = new ImageIcon("src/TomaszC283/main/java/resources/delete.png");
 	ImageIcon carrotImage = new ImageIcon("src/TomaszC283/main/java/resources/carrot.png");
 	ImageIcon plusImage = new ImageIcon("src/TomaszC283/main/java/resources/plus.png");
@@ -75,6 +71,8 @@ public class MainWindow extends JFrame {
 	ImageIcon upsImage = new ImageIcon("src/TomaszC283/main/java/resources/ups.png");
 	ImageIcon removeImage = new ImageIcon("src/TomaszC283/main/java/resources/remove.png");
 	ImageIcon statisticsImage = new ImageIcon("src/TomaszC283/main/java/resources/statistics.png");
+	ImageIcon background = new ImageIcon("src/TomaszC283/main/java/resources/background.jpg");
+	JLabel backgroundLabel;
 
 	// Date today
 	SimpleDateFormat date_sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -99,87 +97,132 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 
 		super("Fitness Calculator");
-		setSize(1300, 600);
+		setSize(1147, 700);
 		setLocation(100, 100);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 
+		// background
+		backgroundLabel = new JLabel("", background, JLabel.CENTER);
+		backgroundLabel.setBounds(0, 0, 1147, 700);
+		backgroundLabel.setBorder(new LineBorder(Color.white, 4));
+
+		add(backgroundLabel);
+
+		WeightTF.setBackground(Color.WHITE);
+		CarboTF.setBackground(Color.WHITE);
+		WheyTF.setBackground(Color.WHITE);
+		FatsTF.setBackground(Color.WHITE);
+		KcalTF.setBackground(Color.WHITE);
+		TotalCarboTF.setBackground(Color.WHITE);
+		TotalWheyTF.setBackground(Color.WHITE);
+		TotalFatsTF.setBackground(Color.WHITE);
+		TotalKcalTF.setBackground(Color.WHITE);
+
+		WeightTF.setForeground(Color.DARK_GRAY);
+		CarboTF.setForeground(Color.DARK_GRAY);
+		WheyTF.setForeground(Color.DARK_GRAY);
+		FatsTF.setForeground(Color.DARK_GRAY);
+		KcalTF.setForeground(Color.DARK_GRAY);
+		TotalCarboTF.setForeground(Color.DARK_GRAY);
+		TotalWheyTF.setForeground(Color.DARK_GRAY);
+		TotalFatsTF.setForeground(Color.DARK_GRAY);
+		TotalKcalTF.setForeground(Color.DARK_GRAY);
+
 		// Update combobox
 		RefreshComboBox();
 
+		KcalSlider.setOpaque(false);
+
 		// Create JTable
-		String[] columnNames = { "Product Name", "Meal", "Weight", "Carbohydrates", "Proteins", "Fats", "KCalories" };
-		
+		String[] columnNames = { "Product", "Meal", "Weight", "Carbos", "Proteins", "Fats", "KCal" };
+
 		model.setColumnIdentifiers(columnNames);
 		model.fireTableDataChanged();
-		
+
 		final JTable tableList = new JTable() {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
-		
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+		tableList.setOpaque(false);
+		((DefaultTableCellRenderer) tableList.getDefaultRenderer(Object.class)).setOpaque(false);
 
-		
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
 		tableList.setModel(model);
 		tableList.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableList.setFillsViewportHeight(true);
-		
+		tableList.setGridColor(Color.WHITE);
+
 		JScrollPane scroll = new JScrollPane(tableList);
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		tableList.setBackground(new Color(245, 255, 255));
-		tableList.setGridColor(Color.BLUE);
-		tableList.setForeground(Color.RED);
-		tableList.setFont(new Font("Serif", Font.PLAIN, 13));
-		
+		tableList.setBackground(Color.LIGHT_GRAY);
+		tableList.setForeground(new Color(255, 69, 0));
+		tableList.setFont(new Font("Serif", Font.BOLD, 13));
+		scroll.setOpaque(false);
+		scroll.getViewport().setOpaque(false);
+		scroll.setBorder(new LineBorder(Color.WHITE, 2));
+
 		TotalCarboTF.setText("0");
 		TotalWheyTF.setText("0");
 		TotalFatsTF.setText("0");
 		TotalKcalTF.setText("0");
-		
+
 		CheckDailyList();
-		
+
 		JTableHeader header = tableList.getTableHeader();
-		header.setBackground(new Color(255, 229, 255));
-		header.setForeground(Color.BLUE);
+		header.setBackground(Color.DARK_GRAY);
+		header.setForeground(Color.YELLOW);
 		header.setFont(new Font("Serif", Font.BOLD, 13));
-		
-		for ( int i = 0; i < model.getColumnCount(); i++)
-		{
-			tableList.getColumnModel().getColumn(i).setCellRenderer( centerRenderer );
+		header.setOpaque(false);
+
+		for (int i = 0; i < model.getColumnCount(); i++) {
+			tableList.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
 		}
-		
+
 		// MainPanel
 
-		Container mainContainer = getContentPane();
-		mainContainer.setLayout(new BorderLayout(6, 3));
-		mainContainer.setBackground(new Color(245, 255, 255));
+		backgroundLabel.setLayout(new BorderLayout(6, 3));
 
 		// Buttons
 
-		JButton ButtonAddNewProd = new JButton("     Add new product     ", carrotImage);
-		JButton ButtonClearList = new JButton("   Clear list   ", cancelImage);
-		JButton ButtonAddProd = new JButton("    Add       ", plusImage);
-		JButton ButtonDeleteProd = new JButton(" Remove Product from Database  ", deleteImage);
-		JButton ButtonRemoveProd = new JButton("    Remove Meal from list  ", removeImage);
-		JButton ButtonStatistics = new JButton("       Statistics review       ", statisticsImage);
+		JButton ButtonAddNewProd = new JButton("    New product     ", carrotImage);
+		JButton ButtonClearList = new JButton("     Clear list     ", cancelImage);
+		JButton ButtonAddProd = new JButton("        Add         ", plusImage);
+		JButton ButtonDeleteProd = new JButton("   Remove Product   ", deleteImage);
+		JButton ButtonRemoveProd = new JButton("     Remove Meal    ", removeImage);
+		JButton ButtonStatistics = new JButton("    Statistics      ", statisticsImage);
 
-		ButtonAddNewProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		ButtonClearList.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		ButtonAddProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		ButtonDeleteProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		ButtonRemoveProd.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		ButtonStatistics.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		
-		ButtonAddNewProd.setBackground(new Color(255, 229, 255));
-		ButtonClearList.setBackground(new Color(255, 229, 255));
-		ButtonAddProd.setBackground(new Color(255, 229, 255));
-		ButtonDeleteProd.setBackground(new Color(255, 229, 255));
-		ButtonRemoveProd.setBackground(new Color(255, 229, 255));
-		ButtonStatistics.setBackground(new Color(255, 229, 255));
+		ButtonAddNewProd.setBackground(Color.DARK_GRAY);
+		ButtonClearList.setBackground(Color.DARK_GRAY);
+		ButtonAddProd.setBackground(Color.DARK_GRAY);
+		ButtonDeleteProd.setBackground(Color.DARK_GRAY);
+		ButtonRemoveProd.setBackground(Color.DARK_GRAY);
+		ButtonStatistics.setBackground(Color.DARK_GRAY);
+
+		ButtonAddNewProd.setForeground(Color.WHITE);
+		ButtonClearList.setForeground(Color.WHITE);
+		ButtonAddProd.setForeground(Color.WHITE);
+		ButtonDeleteProd.setForeground(Color.WHITE);
+		ButtonRemoveProd.setForeground(Color.WHITE);
+		ButtonStatistics.setForeground(Color.WHITE);
+
+		ButtonAddNewProd.setBorder(new LineBorder(Color.WHITE, 1));
+		ButtonClearList.setBorder(new LineBorder(Color.WHITE, 1));
+		ButtonAddProd.setBorder(new LineBorder(Color.WHITE, 1));
+		ButtonDeleteProd.setBorder(new LineBorder(Color.WHITE, 1));
+		ButtonRemoveProd.setBorder(new LineBorder(Color.WHITE, 1));
+		ButtonStatistics.setBorder(new LineBorder(Color.WHITE, 1));
+
+		ButtonAddNewProd.setFont(new Font("Dialog", Font.BOLD, 14));
+		ButtonClearList.setFont(new Font("Dialog", Font.BOLD, 14));
+		ButtonAddProd.setFont(new Font("Dialog", Font.BOLD, 14));
+		ButtonDeleteProd.setFont(new Font("Dialog", Font.BOLD, 14));
+		ButtonRemoveProd.setFont(new Font("Dialog", Font.BOLD, 14));
+		ButtonStatistics.setFont(new Font("Dialog", Font.BOLD, 14));
 
 		// Top Panel
 
@@ -190,12 +233,6 @@ public class MainWindow extends JFrame {
 		JPanel AuxTopPanel5 = new JPanel();
 		JPanel AuxTopPanel6 = new JPanel();
 		JPanel AuxTopPanel7 = new JPanel();
-
-		WeightTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		CarboTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		WheyTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		FatsTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		KcalTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 
 		WeightTF.setText("100");
 
@@ -210,25 +247,18 @@ public class MainWindow extends JFrame {
 		FatsTF.setEnabled(false);
 		KcalTF.setEnabled(false);
 
-		WeightTF.setForeground(Color.RED);
-		CarboTF.setDisabledTextColor(Color.RED);
-		WheyTF.setDisabledTextColor(Color.RED);
-		FatsTF.setDisabledTextColor(Color.RED);
-		KcalTF.setDisabledTextColor(Color.RED);
+		CarboTF.setDisabledTextColor(Color.DARK_GRAY);
+		WheyTF.setDisabledTextColor(Color.DARK_GRAY);
+		FatsTF.setDisabledTextColor(Color.DARK_GRAY);
+		KcalTF.setDisabledTextColor(Color.DARK_GRAY);
 
-		WeightTF.setBackground(new Color(204, 255, 255));
-		CarboTF.setBackground(new Color(204, 255, 255));
-		WheyTF.setBackground(new Color(204, 255, 255));
-		FatsTF.setBackground(new Color(204, 255, 255));
-		KcalTF.setBackground(new Color(204, 255, 255));
-
-		AuxTopPanel1.setBackground(new Color(245, 255, 255));
-		AuxTopPanel2.setBackground(new Color(245, 255, 255));
-		AuxTopPanel3.setBackground(new Color(245, 255, 255));
-		AuxTopPanel4.setBackground(new Color(245, 255, 255));
-		AuxTopPanel5.setBackground(new Color(245, 255, 255));
-		AuxTopPanel6.setBackground(new Color(245, 255, 255));
-		AuxTopPanel7.setBackground(new Color(245, 255, 255));
+		AuxTopPanel1.setOpaque(false);
+		AuxTopPanel2.setOpaque(false);
+		AuxTopPanel3.setOpaque(false);
+		AuxTopPanel4.setOpaque(false);
+		AuxTopPanel5.setOpaque(false);
+		AuxTopPanel6.setOpaque(false);
+		AuxTopPanel7.setOpaque(false);
 
 		AuxTopPanel1.setLayout(new GridLayout(2, 1));
 		AuxTopPanel2.setLayout(new GridLayout(2, 1));
@@ -237,37 +267,44 @@ public class MainWindow extends JFrame {
 		AuxTopPanel5.setLayout(new GridLayout(2, 1));
 		AuxTopPanel7.setLayout(new GridLayout(2, 1));
 
-		JLabel Tittle1 = new JLabel("   Product weight : ");
-		JLabel Tittle2 = new JLabel("   Carbohybrates : ");
-		JLabel Tittle3 = new JLabel("         Proteins :");
-		JLabel Tittle4 = new JLabel("            Fats :");
-		JLabel Tittle5 = new JLabel("        Calories :");
-		JLabel Tittle6 = new JLabel("          Choose product from list : ");
-		JLabel TittleNr = new JLabel("  No of Meal:  ");
+		JLabel Tittle1 = new JLabel("       Weight : ");
+		JLabel Tittle2 = new JLabel("       Carbos : ");
+		JLabel Tittle3 = new JLabel("      Proteins :");
+		JLabel Tittle4 = new JLabel("         Fats :");
+		JLabel Tittle5 = new JLabel("      Calories :");
+		JLabel Tittle6 = new JLabel("     Choose product from list : ");
+		JLabel TittleNr = new JLabel("    Meal :  ");
 
-		Tittle1.setFont(new Font("Helvetica", Font.BOLD, 11));
-		Tittle2.setFont(new Font("Helvetica", Font.BOLD, 11));
-		Tittle3.setFont(new Font("Helvetica", Font.BOLD, 11));
-		Tittle4.setFont(new Font("Helvetica", Font.BOLD, 11));
-		Tittle5.setFont(new Font("Helvetica", Font.BOLD, 11));
-		Tittle6.setFont(new Font("Helvetica", Font.BOLD, 12));
-		TittleNr.setFont(new Font("Helvetica", Font.BOLD, 12));
+		Tittle1.setFont(new Font("Dialog", Font.BOLD, 13));
+		Tittle2.setFont(new Font("Dialog", Font.BOLD, 13));
+		Tittle3.setFont(new Font("Dialog", Font.BOLD, 13));
+		Tittle4.setFont(new Font("Dialog", Font.BOLD, 13));
+		Tittle5.setFont(new Font("Dialog", Font.BOLD, 13));
+		Tittle6.setFont(new Font("Dialog", Font.BOLD, 14));
+		TittleNr.setFont(new Font("Dialog", Font.BOLD, 14));
 
-		Tittle1.setForeground(Color.RED);
-		Tittle2.setForeground(Color.RED);
-		Tittle3.setForeground(Color.RED);
-		Tittle4.setForeground(Color.RED);
-		Tittle5.setForeground(Color.RED);
-		Tittle6.setForeground(Color.RED);
-		TittleNr.setForeground(Color.RED);
+		Tittle1.setForeground(Color.YELLOW);
+		Tittle2.setForeground(Color.YELLOW);
+		Tittle3.setForeground(Color.YELLOW);
+		Tittle4.setForeground(Color.YELLOW);
+		Tittle5.setForeground(Color.YELLOW);
+		Tittle6.setForeground(Color.YELLOW);
+		TittleNr.setForeground(Color.YELLOW);
 
-		comboBox.setBackground(new Color(204, 255, 255));
-		comboBox.setForeground(Color.RED);
+		comboBox.setBackground(Color.WHITE);
+		comboBox.setForeground(Color.DARK_GRAY);
 
 		Integer[] MealNumber = { 1, 2, 3, 4, 5 };
 		comboBoxNr.setModel(new DefaultComboBoxModel<Integer>(MealNumber));
-		comboBoxNr.setForeground(Color.RED);
-		comboBoxNr.setBackground(new Color(204, 255, 255));
+		comboBoxNr.setBackground(Color.WHITE);
+		comboBoxNr.setForeground(Color.DARK_GRAY);
+
+		comboBox.setBorder(new LineBorder(Color.WHITE, 1));
+		comboBoxNr.setBorder(new LineBorder(Color.WHITE, 1));
+
+		comboBox.setPrototypeDisplayValue("Choose a product from list");
+		((JLabel) comboBox.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
+		((JLabel) comboBoxNr.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
 
 		// Add products to list Area
 
@@ -292,15 +329,13 @@ public class MainWindow extends JFrame {
 		JPanel topPanel2 = new JPanel();
 		JPanel topPanel3 = new JPanel();
 
-		topPanel1.setBackground(new Color(245, 255, 255));
-		topPanel2.setBackground(new Color(245, 255, 255));
-		topPanel3.setBackground(new Color(245, 255, 255));
+		topPanel1.setOpaque(false);
+		topPanel2.setOpaque(false);
+		topPanel3.setOpaque(false);
 
-		topPanel1.setBorder(new LineBorder(new Color(48, 213, 200), 3));
 		topPanel1.setLayout(new GridLayout(2, 1));
-		comboBox.setBorder(new LineBorder(new Color(48, 213, 200), 2));
 
-		mainContainer.add(topPanel1, BorderLayout.NORTH);
+		backgroundLabel.add(topPanel1, BorderLayout.NORTH);
 		topPanel1.add(topPanel2);
 		topPanel2.add(AuxTopPanel6);
 		topPanel1.add(topPanel3);
@@ -317,19 +352,17 @@ public class MainWindow extends JFrame {
 		// Middle Panel
 
 		JPanel middlePanel = new JPanel();
+		middlePanel.setOpaque(false);
 
-		KcalSlider.setMajorTickSpacing(200);
-		KcalSlider.setMinorTickSpacing(50);
+		KcalSlider.setMajorTickSpacing(400);
+		KcalSlider.setMinorTickSpacing(200);
 		KcalSlider.setPaintTicks(true);
 		KcalSlider.setPaintLabels(true);
-		KcalSlider.setForeground(Color.RED);
-		KcalSlider.setBackground(new Color(245, 255, 255));
-		KcalSlider.setFont(new Font("Helvetica", Font.ITALIC, 11));
+		KcalSlider.setForeground(Color.YELLOW);
+		KcalSlider.setOpaque(false);
+		KcalSlider.setFont(new Font("Dialog", Font.ITALIC, 11));
 
-
-		
-		mainContainer.add(middlePanel);
-		middlePanel.setBorder(new LineBorder(new Color(48, 213, 200), 3));
+		backgroundLabel.add(middlePanel);
 		middlePanel.setLayout(new BorderLayout());
 		middlePanel.add(scroll, BorderLayout.CENTER);
 		middlePanel.add(KcalSlider, BorderLayout.SOUTH);
@@ -344,63 +377,52 @@ public class MainWindow extends JFrame {
 		JPanel panel10 = new JPanel();
 		JPanel panel11 = new JPanel();
 
-		bottomPanel1.setBackground(new Color(245, 255, 255));
-		bottomPanel2.setBackground(new Color(245, 255, 255));
-		bottomPanel3.setBackground(new Color(245, 255, 255));
-		panel8.setBackground(new Color(245, 255, 255));
-		panel9.setBackground(new Color(245, 255, 255));
-		panel10.setBackground(new Color(245, 255, 255));
-		panel11.setBackground(new Color(245, 255, 255));
+		bottomPanel1.setOpaque(false);
+		bottomPanel2.setOpaque(false);
+		bottomPanel3.setOpaque(false);
+		panel8.setOpaque(false);
+		panel9.setOpaque(false);
+		panel10.setOpaque(false);
+		panel11.setOpaque(false);
 
 		panel8.setLayout(new GridLayout(2, 1));
 		panel9.setLayout(new GridLayout(2, 1));
 		panel10.setLayout(new GridLayout(2, 1));
 		panel11.setLayout(new GridLayout(2, 1));
-		bottomPanel1.setBorder(new LineBorder(new Color(48, 213, 200), 3));
-		mainContainer.add(bottomPanel1, BorderLayout.SOUTH);
+		backgroundLabel.add(bottomPanel1, BorderLayout.SOUTH);
 
-		JLabel Tittle7 = new JLabel("  Podsumowanie : ");
-		JLabel Tittle8 = new JLabel("          Węglowodany : ");
-		JLabel Tittle9 = new JLabel("                   Białko :");
-		JLabel Tittle10 = new JLabel("                Tłuszcze :");
-		JLabel Tittle11 = new JLabel("                 Kalorie :");
-
-		TotalCarboTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		TotalWheyTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		TotalFatsTF.setBorder(new LineBorder(new Color(48, 213, 200), 2));
-		TotalKcalTF.setBorder(new LineBorder(Color.RED, 2));
+		JLabel Tittle7 = new JLabel("  Summary : ");
+		JLabel Tittle8 = new JLabel("            Carbos : ");
+		JLabel Tittle9 = new JLabel("           Proteins :");
+		JLabel Tittle10 = new JLabel("              Fats :");
+		JLabel Tittle11 = new JLabel("           Calories :");
 
 		TotalCarboTF.setHorizontalAlignment(JTextField.CENTER);
 		TotalWheyTF.setHorizontalAlignment(JTextField.CENTER);
 		TotalFatsTF.setHorizontalAlignment(JTextField.CENTER);
 		TotalKcalTF.setHorizontalAlignment(JTextField.CENTER);
 
-		TotalCarboTF.setBackground(new Color(204, 255, 255));
-		TotalWheyTF.setBackground(new Color(204, 255, 255));
-		TotalFatsTF.setBackground(new Color(204, 255, 255));
-		TotalKcalTF.setBackground(new Color(204, 255, 255));
-
-		TotalCarboTF.setDisabledTextColor(Color.RED);
-		TotalWheyTF.setDisabledTextColor(Color.RED);
-		TotalFatsTF.setDisabledTextColor(Color.RED);
-		TotalKcalTF.setDisabledTextColor(Color.RED);
+		TotalCarboTF.setDisabledTextColor(Color.DARK_GRAY);
+		TotalWheyTF.setDisabledTextColor(Color.DARK_GRAY);
+		TotalFatsTF.setDisabledTextColor(Color.DARK_GRAY);
+		TotalKcalTF.setDisabledTextColor(Color.DARK_GRAY);
 
 		TotalCarboTF.setEnabled(false);
 		TotalWheyTF.setEnabled(false);
 		TotalFatsTF.setEnabled(false);
 		TotalKcalTF.setEnabled(false);
 
-		Tittle7.setFont(new Font("Helvetica", Font.BOLD | Font.ITALIC, 13));
-		Tittle8.setFont(new Font("Helvetica", Font.BOLD, 11));
-		Tittle9.setFont(new Font("Helvetica", Font.BOLD, 11));
-		Tittle10.setFont(new Font("Helvetica", Font.BOLD, 11));
-		Tittle11.setFont(new Font("Helvetica", Font.BOLD, 11));
+		Tittle7.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 15));
+		Tittle8.setFont(new Font("Dialog", Font.BOLD, 13));
+		Tittle9.setFont(new Font("Dialog", Font.BOLD, 13));
+		Tittle10.setFont(new Font("Dialog", Font.BOLD, 13));
+		Tittle11.setFont(new Font("Dialog", Font.BOLD, 13));
 
-		Tittle7.setForeground(Color.BLUE);
-		Tittle8.setForeground(Color.BLUE);
-		Tittle9.setForeground(Color.BLUE);
-		Tittle10.setForeground(Color.BLUE);
-		Tittle11.setForeground(Color.BLUE);
+		Tittle7.setForeground(Color.YELLOW);
+		Tittle8.setForeground(Color.YELLOW);
+		Tittle9.setForeground(Color.YELLOW);
+		Tittle10.setForeground(Color.YELLOW);
+		Tittle11.setForeground(Color.YELLOW);
 
 		panel8.add(Tittle8);
 		panel8.add(TotalCarboTF);
@@ -421,68 +443,77 @@ public class MainWindow extends JFrame {
 
 		// East Panel
 		JPanel panelEast1 = new JPanel();
-		panelEast1.setBorder(new LineBorder(new Color(48, 213, 200), 3));
-		panelEast1.setBackground(new Color(245, 255, 255));
+		panelEast1.setOpaque(false);
 
-		mainContainer.add(panelEast1, BorderLayout.EAST);
-		fxPanel.setBackground(new Color(245, 255, 255));
+		backgroundLabel.add(panelEast1, BorderLayout.EAST);
 		panelEast1.setLayout(new BorderLayout());
 		panelEast1.add(fxPanel, BorderLayout.CENTER);
-		
-		JPanel statsPanel = new JPanel(); 
-		statsPanel.setBackground(new Color(245, 255, 255));
+
+		JPanel statsPanel = new JPanel();
 		statsPanel.add(ButtonStatistics);
 		panelEast1.add(statsPanel, BorderLayout.SOUTH);
-		
-		// Actions
+		statsPanel.setOpaque(false);
+
+		// West Panel ( for padding )
+		JPanel panelWest = new JPanel();
+		panelWest.setOpaque(false);
+		JLabel paddingLabel = new JLabel("      ");
+		panelWest.add(paddingLabel);
+		backgroundLabel.add(panelWest, BorderLayout.WEST);
+
+		// -------------------------------------- Actions
+		// --------------------------------------
 
 		// Removing meal from Today's Meal List
 		ButtonRemoveProd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				int decision = JOptionPane.showConfirmDialog(null,
-						"    Are you sure to remove selected Row from Today's meal list ?", "Warning",
-						JOptionPane.YES_NO_OPTION);
-				if (decision == 0) {
-					try {
-						int row = tableList.getSelectedRow();
-						dailyProducts.setDate(DateToday);
-						dailyProducts.setProductName(model.getValueAt(row, 0).toString());
-						dailyProducts.setID(Integer.parseInt(getDateFromDB("ID", "kcal", "DailyProducts", dailyProducts.getProductName())));
-						dailyProducts
-								.setMealNo(Integer.parseInt(model.getValueAt(row, 1).toString().replace("# ", "")));
-						dailyProducts
-								.setWeight(Double.parseDouble(model.getValueAt(row, 2).toString().replace(" g", "")));
-						dailyProducts
-								.setCarbo(Double.parseDouble(model.getValueAt(row, 3).toString()));
-						dailyProducts
-								.setWhey(Double.parseDouble(model.getValueAt(row, 4).toString()));
-						dailyProducts
-								.setFats(Double.parseDouble(model.getValueAt(row, 5).toString()));
+				if (tableList.getSelectionModel().isSelectionEmpty())
+					;
+				
+				else {
+					int decision = JOptionPane.showConfirmDialog(null,
+							"    Are you sure to remove selected meal from Daily meal list ?", "Warning",
+							JOptionPane.YES_NO_OPTION);
+					if (decision == 0) {
+						try {
+							int row = tableList.getSelectedRow();
+							dailyProducts.setDate(DateToday);
+							dailyProducts.setProductName(model.getValueAt(row, 0).toString());
+							dailyProducts.setID(Integer.parseInt(
+									getDateFromDB("ID", "kcal", "DailyProducts", dailyProducts.getProductName())));
+							dailyProducts
+									.setMealNo(Integer.parseInt(model.getValueAt(row, 1).toString().replace("# ", "")));
+							dailyProducts.setWeight(
+									Double.parseDouble(model.getValueAt(row, 2).toString().replace(" g", "")));
+							dailyProducts.setCarbo(Double.parseDouble(model.getValueAt(row, 3).toString()));
+							dailyProducts.setWhey(Double.parseDouble(model.getValueAt(row, 4).toString()));
+							dailyProducts.setFats(Double.parseDouble(model.getValueAt(row, 5).toString()));
 
-						String myDriver = "org.gjt.mm.mysql.Driver";
-						String myUrl = "jdbc:mysql://localhost:3306/kcal";
-						Class.forName(myDriver);
+							String myDriver = "org.gjt.mm.mysql.Driver";
+							String myUrl = "jdbc:mysql://localhost:3306/kcal";
+							Class.forName(myDriver);
 
-						Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+							Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
 
-						Statement st = conn.createStatement();
+							Statement st = conn.createStatement();
 
-						st.executeUpdate(
-								"DELETE FROM `DailyProducts` WHERE ID = " + dailyProducts.getID() + " AND `ProductName` = '" + dailyProducts.getProductName()
-										+ "' AND `Date` = '" + DateToday + "' AND `Carbo` = " + dailyProducts.getCarbo()
-										+ " AND `Whey` = " + dailyProducts.getWhey() + " AND `Fats` = "
-										+ dailyProducts.getFats() + " AND `Weight` = " + dailyProducts.getWeight());
+							st.executeUpdate("DELETE FROM `DailyProducts` WHERE ID = " + dailyProducts.getID()
+									+ " AND `ProductName` = '" + dailyProducts.getProductName() + "' AND `Date` = '"
+									+ DateToday + "' AND `Carbo` = " + dailyProducts.getCarbo() + " AND `Whey` = "
+									+ dailyProducts.getWhey() + " AND `Fats` = " + dailyProducts.getFats()
+									+ " AND `Weight` = " + dailyProducts.getWeight());
 
-						conn.close();
+							conn.close();
 
-						model.removeRow(row);
-
-						RefreshSummaryPanel();	
-						
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
-								deleteImage);
+							model.removeRow(row);
+							RefreshSummaryPanel();
+							tableList.clearSelection();
+							
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!",
+									JOptionPane.INFORMATION_MESSAGE, deleteImage);
+						}
 					}
 				}
 			}
@@ -570,6 +601,9 @@ public class MainWindow extends JFrame {
 						TotalFatsTF.setText("");
 						TotalKcalTF.setText("");
 
+						KcalSlider.setValue(0);
+						RefreshSummaryPanel();
+
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 								deleteImage);
@@ -593,26 +627,41 @@ public class MainWindow extends JFrame {
 		WeightTF.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-
 			}
 
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyReleased(KeyEvent evt) {
 
-			}
-
-			@Override
-			public void keyTyped(KeyEvent evt) {
 				char c = evt.getKeyChar();
+
+				String weightString = WeightTF.getText();
 				if (!(Character.isDigit(c) || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE)
 						|| (c == KeyEvent.VK_PERIOD) || (c == KeyEvent.VK_COMMA))) {
 					evt.consume();
 				}
+
 				if (c == KeyEvent.VK_COMMA) {
 					evt.setKeyChar((char) KeyEvent.VK_PERIOD);
 				}
-				if (WeightTF.getText() != null && !WeightTF.getText().isEmpty() && !WeightTF.getText().equals("")) {
-					if (comboBox.getSelectedItem() != null && Double.parseDouble(WeightTF.getText()) != 0) {
+
+				if (weightString.equals("00")) {
+					WeightTF.setText("");
+				}
+
+				if (weightString.length() > 1 && weightString.charAt(0) == KeyEvent.VK_0
+						&& weightString.charAt(1) != KeyEvent.VK_PERIOD) {
+					WeightTF.setText("0." + weightString.substring(1));
+				}
+
+				if (weightString.equals("")) {
+					CarboTF.setText("0");
+					WheyTF.setText("0");
+					FatsTF.setText("0");
+					KcalTF.setText("0");
+				}
+
+				if (!weightString.equals("")) {
+					if (comboBox.getSelectedItem() != null) {
 
 						String carbo = getDateFromDB("ProductCarbo", "kcal", "Products",
 								comboBox.getSelectedItem().toString());
@@ -638,6 +687,12 @@ public class MainWindow extends JFrame {
 						KcalTF.setText(String.format("%.2f", dailyProducts.getKcal()));
 					}
 				}
+
+			}
+
+			@Override
+			public void keyTyped(KeyEvent evt) {
+
 			}
 		});
 
@@ -645,6 +700,29 @@ public class MainWindow extends JFrame {
 		ButtonAddProd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (comboBox.getSelectedItem() != null) {
+
+					if (CarboTF.getText() == null || CarboTF.getText().isEmpty() || CarboTF.getText().equals("")) {
+						String carbo = getDateFromDB("ProductCarbo", "kcal", "Products",
+								comboBox.getSelectedItem().toString());
+						String whey = getDateFromDB("ProductWhey", "kcal", "Products",
+								comboBox.getSelectedItem().toString());
+						String fats = getDateFromDB("ProductFats", "kcal", "Products",
+								comboBox.getSelectedItem().toString());
+
+						double carboDouble = Double.parseDouble(carbo);
+						double wheyDouble = Double.parseDouble(whey);
+						double fatsDouble = Double.parseDouble(fats);
+
+						CarboTF.setText(String.format("%.2f", carboDouble));
+						WheyTF.setText(String.format("%.2f", wheyDouble));
+						FatsTF.setText(String.format("%.2f", fatsDouble));
+
+						dailyProducts.setCarbo(Double.parseDouble(CarboTF.getText().replace(",", ".")));
+						dailyProducts.setWhey(Double.parseDouble(WheyTF.getText().replace(",", ".")));
+						dailyProducts.setFats(Double.parseDouble(FatsTF.getText().replace(",", ".")));
+
+						KcalTF.setText(String.format("%.2f", dailyProducts.getKcal()));
+					}
 
 					dailyProducts.setProductName(comboBox.getSelectedItem().toString());
 					dailyProducts.setCarbo(Double.parseDouble(CarboTF.getText().replace(",", ".")));
@@ -774,35 +852,35 @@ public class MainWindow extends JFrame {
 		}
 		TotalCarboTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
 		tempValue = 0;
-		
+
 		for (int count = 0; count < model.getRowCount(); count++) {
 			dailyProducts.setWhey(Double.parseDouble(model.getValueAt(count, 4).toString()));
 			tempValue = tempValue + dailyProducts.getWhey();
 		}
 		TotalWheyTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
 		tempValue = 0;
-		
+
 		for (int count = 0; count < model.getRowCount(); count++) {
 			dailyProducts.setFats(Double.parseDouble(model.getValueAt(count, 5).toString()));
 			tempValue = tempValue + dailyProducts.getFats();
 		}
 		TotalFatsTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
 		tempValue = 0;
-		
+
 		for (int count = 0; count < model.getRowCount(); count++) {
 			dailyProducts.setKcal(Double.parseDouble(model.getValueAt(count, 6).toString()));
 			tempValue = tempValue + dailyProducts.getKcal();
 		}
 		TotalKcalTF.setText(String.valueOf(Math.round(tempValue)));
 		tempValue = 0;
-		
+
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				initFX(fxPanel);
 			}
 		});
-		
+
 		// Slider
 		KcalSlider.setValue((int) Math.round(Double.parseDouble(TotalKcalTF.getText())));
 		if (Double.parseDouble(TotalKcalTF.getText()) >= 3000) {
@@ -857,31 +935,45 @@ public class MainWindow extends JFrame {
 					deleteImage);
 		}
 	}
-	
+
 	private static void initFX(JFXPanel fxPanel) {
-		Scene scene = createScene((int) Math.round(Double.parseDouble(TotalCarboTF.getText())), (int) Math.round(Double.parseDouble(TotalWheyTF.getText())), (int) Math.round(Double.parseDouble(TotalFatsTF.getText())));
+		Scene scene = createScene((int) Math.round(Double.parseDouble(TotalCarboTF.getText())),
+				(int) Math.round(Double.parseDouble(TotalWheyTF.getText())),
+				(int) Math.round(Double.parseDouble(TotalFatsTF.getText())));
 		fxPanel.setScene(scene);
 	}
-	
+
 	private static Scene createScene(int Carbo, int Whey, int Fats) {
-		
-	        PieChart pieChart = new PieChart();
-	        
-	        PieChart.Data slice1 = new PieChart.Data("Carbos " + Carbo + " g", Carbo);
-	        PieChart.Data slice2 = new PieChart.Data("Proteins " + Whey + " g", Whey);
-	        PieChart.Data slice3 = new PieChart.Data("Fats " + Fats + " g", Fats);
 
-	        pieChart.getData().add(slice1);
-	        pieChart.getData().add(slice2);
-	        pieChart.getData().add(slice3);
+		PieChart pieChart = new PieChart();
 
-	        pieChart.setLabelLineLength(15);
-	        
-	        VBox vbox = new VBox(pieChart);
-	        vbox.setBackground(Background.EMPTY);
-	        String style = "-fx-background-color: rgba(245,255,255,0.5); -fx-font-size: 1.2em;";
-	        vbox.setStyle(style);
-	        Scene scene = new Scene(vbox, 400, 300);        
+		PieChart.Data slice1 = new PieChart.Data("Carbos", 1);
+		PieChart.Data slice2 = new PieChart.Data("Proteins", 1);
+		PieChart.Data slice3 = new PieChart.Data("Fats", 1);
+
+		if (Carbo != 0 || Whey != 0 || Fats != 0) {
+			slice1 = new PieChart.Data("Carbos " + Carbo + " g", Carbo);
+			slice2 = new PieChart.Data("Proteins " + Whey + " g", Whey);
+			slice3 = new PieChart.Data("Fats " + Fats + " g", Fats);
+		}
+
+		else {
+
+		}
+		pieChart.getData().add(slice1);
+		pieChart.getData().add(slice2);
+		pieChart.getData().add(slice3);
+
+		pieChart.setLabelLineLength(20);
+
+		VBox vbox = new VBox(pieChart);
+		vbox.setBackground(Background.EMPTY);
+		String style = "-fx-font-size: 1em;";
+		vbox.setStyle(style);
+		Scene scene = new Scene(vbox, 400, 300);
+		scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+		scene.getStylesheets().add("style.css");
+
 		return (scene);
 	}
 }

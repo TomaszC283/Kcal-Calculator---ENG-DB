@@ -1,0 +1,34 @@
+.data0.chart-pie { -fx-pie-color: #ffd700; }
+.data1.chart-pie { -fx-pie-color: lawngreen; }
+.data2.chart-pie { -fx-pie-color: darkturquoise; }
+
+* {
+	-fx-text-fill: red;
+	-fx-font-weight: bold;
+	-fx-font-family: Tahoma;
+	-fx-label-line-length: 20;
+
+}
+.chart-pie {
+	-fx-border-width: 3;
+	-fx-border-color: white;
+}
+
+.chart-legend {
+	-fx-background-color: lightgray;
+	-fx-border-width: 3;
+	-fx-border-color: white;
+}
+
+.chart-pie-label-line {
+    -fx-stroke: white;
+    -fx-fill: white;
+}
+
+.chart-pie-label {
+    -fx-fill: yellow;
+    -fx-font-size: 1.3em;
+    -fx-font-weight: bold;
+    -fx-font-family: Tahoma;
+    -fx-stroke: red;
+} 

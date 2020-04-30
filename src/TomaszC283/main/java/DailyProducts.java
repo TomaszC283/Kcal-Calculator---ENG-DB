@@ -8,7 +8,6 @@ public class DailyProducts {
 	private double Carbo;
 	private double Whey;
 	private double Fats;
-	@SuppressWarnings("unused")
 	private double Kcal;
 	private int MealNo;
 	private double Weight;
