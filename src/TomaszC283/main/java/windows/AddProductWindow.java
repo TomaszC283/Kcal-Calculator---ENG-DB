@@ -1,9 +1,11 @@
 package TomaszC283.main.java.windows;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -53,8 +55,13 @@ public class AddProductWindow {
 	AddProductWindow() {
 		
 		dpFrame = new JFrame("Add new product to database");
-		dpFrame.setBounds(200, 200, 550, 434);
+		dpFrame.setSize(550, 434);
 		dpFrame.setResizable(false);
+	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+	    int x = (int) ((dimension.getWidth() - dpFrame.getWidth()) / 2);
+	    int y = (int) ((dimension.getHeight() - dpFrame.getHeight()) / 2);
+	    dpFrame.setLocation(x, y);
+		
 		
 		backgroundLabel = new JLabel("", background, JLabel.CENTER);
 		backgroundLabel.setBounds(0,0,550,434);
@@ -304,11 +311,11 @@ public class AddProductWindow {
 	{
 		try
 	    {
-	      String myDriver = "org.gjt.mm.mysql.Driver";
-	      String myUrl = "jdbc:mysql://localhost:3306/kcal";
+	      String myDriver = "com.mysql.cj.jdbc.Driver";
+	      String myUrl = "jdbc:mysql://localhost:3306/kcal?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=utf-8";
 	      Class.forName(myDriver);
 	      
-	      Connection conn = DriverManager.getConnection(myUrl, "root", "lamel123");
+	      Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
 	      
 	      Statement st = conn.createStatement();
 	      
