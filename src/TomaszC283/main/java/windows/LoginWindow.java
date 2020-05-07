@@ -35,16 +35,10 @@ public class LoginWindow extends JFrame {
 	JButton loginButton = new JButton("     Choose user     ");
 	JButton newUserButton = new JButton("     New user     ");
 	JButton editUserButton = new JButton("     Edit user     ");
+	JButton exitButton = new JButton(" Close application ");
 
 	JPanel mainPanel;
-	JLabel paddingPanel1 = new JLabel("    Select your username ");
-	JLabel paddingPanel2 = new JLabel("  ");
-	JLabel paddingPanel3 = new JLabel("                                   ");
-	JLabel paddingPanel4 = new JLabel("                                   ");
-	JLabel paddingPanel6 = new JLabel("  ");
-	JLabel paddingPanel7 = new JLabel("  ");
-	JLabel paddingPanel8 = new JLabel("  ");
-	JLabel paddingPanel9 = new JLabel("  ");
+	JLabel header = new JLabel("    Select your username ");
 	JPanel userButtonPanel = new JPanel();
 
 	static JComboBox<String> userComboBox = new JComboBox<>();
@@ -82,52 +76,51 @@ public class LoginWindow extends JFrame {
 		// background
 		backgroundLabel = new JLabel("", background, JLabel.CENTER);
 		backgroundLabel.setBounds(0, 0, 550, 434);
-		backgroundLabel.setBorder(new LineBorder(Color.white, 4));
+		backgroundLabel.setBorder(new LineBorder(new Color(255,255,255,0),50));
 
 		add(backgroundLabel);
 		backgroundLabel.setLayout(new BorderLayout());
 
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayout(9, 1));
-		userButtonPanel.setLayout(new BorderLayout());
+		mainPanel.setLayout(new GridLayout(5, 1, 10, 10));
+		userButtonPanel.setLayout(new GridLayout(1,2, 20, 0));
 
 		mainPanel.setOpaque(false);
 		userButtonPanel.setOpaque(false);
 
 		backgroundLabel.add(mainPanel, BorderLayout.CENTER);
-		backgroundLabel.add(paddingPanel3, BorderLayout.EAST);
-		backgroundLabel.add(paddingPanel4, BorderLayout.WEST);
-		mainPanel.add(paddingPanel8);
-		mainPanel.add(paddingPanel1);
+		mainPanel.add(header);
 		mainPanel.add(userComboBox);
-		mainPanel.add(paddingPanel6);
 		mainPanel.add(loginButton);
-		mainPanel.add(paddingPanel7);
 		mainPanel.add(userButtonPanel);
-		userButtonPanel.add(newUserButton, BorderLayout.WEST);
-		userButtonPanel.add(editUserButton, BorderLayout.EAST);
-		mainPanel.add(paddingPanel2);
-		mainPanel.add(paddingPanel9);
+		userButtonPanel.add(newUserButton);
+		userButtonPanel.add(editUserButton);
+		mainPanel.add(exitButton);
 
 		mainPanel.setBorder(new LineBorder(new Color(255, 255, 255, 0), 45));
 		loginButton.setBorder(new LineBorder(Color.WHITE, 2));
 		newUserButton.setBorder(new LineBorder(Color.WHITE, 2));
 		editUserButton.setBorder(new LineBorder(Color.WHITE, 2));
-
+		exitButton.setBorder(new LineBorder(Color.WHITE, 2));
+		
 		loginButton.setForeground(Color.WHITE);
 		newUserButton.setForeground(Color.WHITE);
 		editUserButton.setForeground(Color.WHITE);
-		paddingPanel1.setForeground(Color.DARK_GRAY);
-
+		header.setForeground(Color.BLACK);
+		exitButton.setForeground(Color.WHITE);
+		
 		loginButton.setBackground(Color.DARK_GRAY);
 		newUserButton.setBackground(Color.DARK_GRAY);
 		editUserButton.setBackground(Color.DARK_GRAY);
-
+		exitButton.setBackground(Color.DARK_GRAY);
+		
 		loginButton.setFont(new Font("Dialog", Font.BOLD, 14));
 		newUserButton.setFont(new Font("Dialog", Font.BOLD, 14));
 		editUserButton.setFont(new Font("Dialog", Font.BOLD, 14));
-		paddingPanel1.setFont(new Font("Dialog", Font.BOLD, 18));
-
+		header.setFont(new Font("Dialog", Font.BOLD, 18));
+		exitButton.setFont(new Font("Dialog", Font.BOLD, 14));
+		
+		((JLabel) userComboBox.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		refreshUsersCB();
 		
 		// Actions
@@ -152,20 +145,34 @@ public class LoginWindow extends JFrame {
 				nw.NewWindow();
 			}
 		});
+		
+		editUserButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				userName = userComboBox.getSelectedItem().toString();
+				EditUserWindow nw = new EditUserWindow();
+				nw.NewWindow();
+			}
+		});
+		
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
 	}
 
 	static void refreshUsersCB() {
 
 		try {
 			String myDriver = "com.mysql.cj.jdbc.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 			Class.forName(myDriver);
 
-			Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 			Statement st = conn.createStatement();
 
-			ResultSet rs = st.executeQuery("SELECT * FROM Users ORDER BY userName ASC");
+			ResultSet rs = st.executeQuery("SELECT * FROM users ORDER BY userName ASC");
 
 			userComboBox.removeAllItems();
 
@@ -187,20 +194,21 @@ public class LoginWindow extends JFrame {
 		try {
 
 			String myDriver = "com.mysql.cj.jdbc.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 			Class.forName(myDriver);
 
-			Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 			Statement st = conn.createStatement();
 
-			ResultSet rs = st.executeQuery("SELECT * FROM Users WHERE `userName` = '" + userName + "'");
+			ResultSet rs = st.executeQuery("SELECT * FROM users WHERE `userName` = '" + userName + "'");
 
 			while (rs.next()) {
 				UserID = rs.getInt("userID");
 				UserKcalGoal = rs.getInt("preferedKcal");
 			}
 			conn.close();
+			MainWindow.KcalSlider.setMaximum(LoginWindow.UserKcalGoal+1500);
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 					deleteImage);

@@ -55,7 +55,7 @@ public class MainWindow extends JFrame {
 	private static JComboBox<String> comboBox = new JComboBox<>();
 	JComboBox<Integer> comboBoxNr = new JComboBox<>();
 	
-	private static JSlider KcalSlider = new JSlider(0, LoginWindow.UserKcalGoal+1000, 0);
+	public static JSlider KcalSlider = new JSlider(0, LoginWindow.UserKcalGoal+1000, 0);
 	private static JTextField TotalCarboTF = new JTextField(13);
 	private static JTextField TotalWheyTF = new JTextField(13);
 	private static JTextField TotalFatsTF = new JTextField(13);
@@ -220,9 +220,10 @@ public class MainWindow extends JFrame {
 		JButton ButtonClearList = new JButton("     Clear list     ", cancelImage);
 		JButton ButtonAddProd = new JButton("    Add to list     ", plusImage);
 		JButton ButtonDeleteProd = new JButton("   Remove product   ", deleteImage);
-		JButton ButtonRemoveProd = new JButton("  Remove from list  ", removeImage);
+		JButton ButtonRemoveProd = new JButton(" Remove from list  ", removeImage);
 		JButton ButtonStatistics = new JButton("    Statistics      ", statisticsImage);
-		JButton ButtonChangeUser = new JButton("     Change user    ");
+		JButton ButtonChangeUser = new JButton("        Change user       ");
+		JButton ButtonAddBW = new JButton("      Add today's BW      ");
 
 		ButtonAddNewProd.setBackground(Color.DARK_GRAY);
 		ButtonClearList.setBackground(Color.DARK_GRAY);
@@ -231,6 +232,7 @@ public class MainWindow extends JFrame {
 		ButtonRemoveProd.setBackground(Color.DARK_GRAY);
 		ButtonStatistics.setBackground(Color.DARK_GRAY);
 		ButtonChangeUser.setBackground(Color.DARK_GRAY);
+		ButtonAddBW.setBackground(Color.DARK_GRAY);
 		
 		ButtonAddNewProd.setForeground(Color.WHITE);
 		ButtonClearList.setForeground(Color.WHITE);
@@ -239,6 +241,7 @@ public class MainWindow extends JFrame {
 		ButtonRemoveProd.setForeground(Color.WHITE);
 		ButtonStatistics.setForeground(Color.WHITE);
 		ButtonChangeUser.setForeground(Color.WHITE);
+		ButtonAddBW.setForeground(Color.WHITE);
 
 		ButtonAddNewProd.setBorder(new LineBorder(Color.WHITE, 1));
 		ButtonClearList.setBorder(new LineBorder(Color.WHITE, 1));
@@ -247,6 +250,7 @@ public class MainWindow extends JFrame {
 		ButtonRemoveProd.setBorder(new LineBorder(Color.WHITE, 1));
 		ButtonStatistics.setBorder(new LineBorder(Color.WHITE, 1));
 		ButtonChangeUser.setBorder(new LineBorder(Color.WHITE, 1));
+		ButtonAddBW.setBorder(new LineBorder(Color.WHITE, 1));
 		
 		ButtonAddNewProd.setFont(new Font("Dialog", Font.BOLD, 14));
 		ButtonClearList.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -254,7 +258,8 @@ public class MainWindow extends JFrame {
 		ButtonDeleteProd.setFont(new Font("Dialog", Font.BOLD, 14));
 		ButtonRemoveProd.setFont(new Font("Dialog", Font.BOLD, 14));
 		ButtonStatistics.setFont(new Font("Dialog", Font.BOLD, 14));
-		ButtonChangeUser.setFont(new Font("Dialog", Font.BOLD, 10));
+		ButtonChangeUser.setFont(new Font("Dialog", Font.BOLD, 12));
+		ButtonAddBW.setFont(new Font("Dialog", Font.BOLD, 12));
 		
 		// Top Panel
 		JPanel AuxTopPanel0 = new JPanel();
@@ -293,7 +298,7 @@ public class MainWindow extends JFrame {
 		AuxTopPanel6.setOpaque(false);
 		AuxTopPanel7.setOpaque(false);
 
-		AuxTopPanel0.setLayout(new GridLayout(2, 1));
+		AuxTopPanel0.setLayout(new GridLayout(3, 1, 5, 5));
 		AuxTopPanel1.setLayout(new GridLayout(2, 1));
 		AuxTopPanel2.setLayout(new GridLayout(2, 1));
 		AuxTopPanel3.setLayout(new GridLayout(2, 1));
@@ -301,7 +306,7 @@ public class MainWindow extends JFrame {
 		AuxTopPanel5.setLayout(new GridLayout(2, 1));
 		AuxTopPanel7.setLayout(new GridLayout(2, 1));
 
-		JLabel userName = new JLabel(" Hello " + LoginWindow.userName + " !");
+		JLabel userName = new JLabel("    Hello " + LoginWindow.userName + " !");
 		JLabel Tittle1 = new JLabel("       Weight : ");
 		JLabel Tittle2 = new JLabel("        Carbs : ");
 		JLabel Tittle3 = new JLabel("      Proteins :");
@@ -319,7 +324,7 @@ public class MainWindow extends JFrame {
 		Tittle6.setFont(new Font("Dialog", Font.BOLD, 14));
 		TittleNr.setFont(new Font("Dialog", Font.BOLD, 14));
 
-		userName.setForeground(Color.DARK_GRAY);
+		userName.setForeground(Color.BLACK);
 		Tittle1.setForeground(Color.DARK_GRAY);
 		Tittle2.setForeground(Color.DARK_GRAY);
 		Tittle3.setForeground(Color.DARK_GRAY);
@@ -344,9 +349,10 @@ public class MainWindow extends JFrame {
 		((JLabel) comboBoxNr.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
 
 		// Add products to list Area
-
+		
 		AuxTopPanel0.add(userName);
 		AuxTopPanel0.add(ButtonChangeUser);
+		AuxTopPanel0.add(ButtonAddBW);
 		AuxTopPanel1.add(Tittle1);
 		AuxTopPanel1.add(WeightTF);
 		AuxTopPanel2.add(Tittle2);
@@ -501,8 +507,14 @@ public class MainWindow extends JFrame {
 		panelWest.add(paddingLabel);
 		backgroundLabel.add(panelWest, BorderLayout.WEST);
 
-		// -------------------------------------- Actions
-		// --------------------------------------
+		// -------------------------------------- Actions ---
+		
+		ButtonAddBW.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				AddBW nw = new AddBW();
+				nw.NewWindow();
+			}
+		});
 
 		// Removing meal from Today's Meal List
 		ButtonRemoveProd.addActionListener(new ActionListener() {
@@ -521,7 +533,7 @@ public class MainWindow extends JFrame {
 							dailyProducts.setDate(DateToday);
 							dailyProducts.setProductName(model.getValueAt(row, 0).toString());
 							dailyProducts.setID(Integer.parseInt(
-									getDateFromDB("ID", "kcal", "DailyProducts", dailyProducts.getProductName())));
+									getDateFromDB("ID", "dailyproducts", dailyProducts.getProductName())));
 							dailyProducts
 									.setMealNo(Integer.parseInt(model.getValueAt(row, 1).toString().replace("# ", "")));
 							dailyProducts.setWeight(
@@ -531,14 +543,14 @@ public class MainWindow extends JFrame {
 							dailyProducts.setFats(Double.parseDouble(model.getValueAt(row, 5).toString()));
 
 							String myDriver = "com.mysql.cj.jdbc.Driver";
-							String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+							String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 							Class.forName(myDriver);
 
-							Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+							Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 							Statement st = conn.createStatement();
 
-							st.executeUpdate("DELETE FROM `DailyProducts` WHERE ID = " + dailyProducts.getID()
+							st.executeUpdate("DELETE FROM `dailyproducts` WHERE ID = " + dailyProducts.getID()
 									+ " AND `ProductName` = '" + dailyProducts.getProductName() + "' AND `Date` = '"
 									+ DateToday + "' AND `Carbo` = " + dailyProducts.getCarbo() + " AND `Whey` = "
 									+ dailyProducts.getWhey() + " AND `Fats` = " + dailyProducts.getFats()
@@ -570,16 +582,16 @@ public class MainWindow extends JFrame {
 						products.setProductName(comboBox.getSelectedItem().toString());
 
 						String myDriver = "com.mysql.cj.jdbc.Driver";
-						String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+						String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 						Class.forName(myDriver);
 
-						Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+						Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 						Statement st = conn.createStatement();
 
 						String ValuesSTR = "'" + products.getProductName() + "'";
 
-						st.executeUpdate("DELETE FROM `Products` WHERE `ProductName` = " + ValuesSTR);
+						st.executeUpdate("DELETE FROM `products` WHERE `ProductName` = " + ValuesSTR);
 
 						conn.close();
 
@@ -630,16 +642,16 @@ public class MainWindow extends JFrame {
 						dailyProducts.setDate(DateToday);
 
 						String myDriver = "com.mysql.cj.jdbc.Driver";
-						String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+						String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 						Class.forName(myDriver);
 
-						Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+						Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 						Statement st = conn.createStatement();
 
 						String ValuesSTR = "'" + dailyProducts.getDate() + "'";
 
-						st.executeUpdate("DELETE FROM `DailyProducts` WHERE `Date` = " + ValuesSTR + "AND `UserID` = " + LoginWindow.UserID);
+						st.executeUpdate("DELETE FROM `dailyproducts` WHERE `Date` = " + ValuesSTR + "AND `UserID` = " + LoginWindow.UserID);
 
 						conn.close();
 
@@ -716,11 +728,11 @@ public class MainWindow extends JFrame {
 				if (!weightString.equals("")) {
 					if (comboBox.getSelectedItem() != null) {
 
-						String carbo = getDateFromDB("ProductCarbo", "kcal", "Products",
+						String carbo = getDateFromDB("ProductCarbo", "products",
 								comboBox.getSelectedItem().toString());
-						String whey = getDateFromDB("ProductWhey", "kcal", "Products",
+						String whey = getDateFromDB("ProductWhey", "products",
 								comboBox.getSelectedItem().toString());
-						String fats = getDateFromDB("ProductFats", "kcal", "Products",
+						String fats = getDateFromDB("ProductFats", "products",
 								comboBox.getSelectedItem().toString());
 
 						double carboDouble = Double.parseDouble(carbo);
@@ -774,11 +786,11 @@ public class MainWindow extends JFrame {
 				if (comboBox.getSelectedItem() != null) {
 
 					if (CarboTF.getText() == null || CarboTF.getText().isEmpty() || CarboTF.getText().equals("")) {
-						String carbo = getDateFromDB("ProductCarbo", "kcal", "Products",
+						String carbo = getDateFromDB("ProductCarbo", "products",
 								comboBox.getSelectedItem().toString());
-						String whey = getDateFromDB("ProductWhey", "kcal", "Products",
+						String whey = getDateFromDB("ProductWhey", "products",
 								comboBox.getSelectedItem().toString());
-						String fats = getDateFromDB("ProductFats", "kcal", "Products",
+						String fats = getDateFromDB("ProductFats", "products",
 								comboBox.getSelectedItem().toString());
 
 						double carboDouble = Double.parseDouble(carbo);
@@ -806,10 +818,10 @@ public class MainWindow extends JFrame {
 					try {
 
 						String myDriver = "com.mysql.cj.jdbc.Driver";
-						String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+						String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 						Class.forName(myDriver);
 
-						Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+						Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 						Statement st = conn.createStatement();
 
@@ -862,19 +874,19 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	private String getDateFromDB(String Value, String Table, String ColumnName, String ProductName) {
+	private String getDateFromDB(String Value, String ColumnName, String ProductName) {
 		try {
 
 			String myDriver = "com.mysql.cj.jdbc.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 			Class.forName(myDriver);
 
-			Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 			Statement st = conn.createStatement();
 
 			ResultSet rs = st.executeQuery(
-					"SELECT * FROM " + Table + "." + ColumnName + " WHERE ProductName = '" + ProductName + "'");
+					"SELECT * FROM " + ColumnName + " WHERE ProductName = '" + ProductName + "'");
 
 			while (rs.next()) {
 				DateFromDB = rs.getString(Value);
@@ -894,14 +906,14 @@ public class MainWindow extends JFrame {
 		try {
 
 			String myDriver = "com.mysql.cj.jdbc.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 			Class.forName(myDriver);
 
-			Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 			Statement st = conn.createStatement();
 
-			ResultSet rs = st.executeQuery("SELECT * FROM kcal.Products ORDER BY ProductName ASC");
+			ResultSet rs = st.executeQuery("SELECT * FROM products ORDER BY ProductName ASC");
 
 			comboBox.removeAllItems();
 
@@ -964,13 +976,13 @@ public class MainWindow extends JFrame {
 		try {
 
 			String myDriver = "com.mysql.cj.jdbc.Driver";
-			String myUrl = "jdbc:mysql://localhost:3306/kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 			Class.forName(myDriver);
 
-			Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM kcal.DailyProducts WHERE `Date` = '" + DateToday + "' AND `UserID` = " + LoginWindow.UserID);
+			ResultSet rs = st.executeQuery("SELECT * FROM dailyproducts WHERE `Date` = '" + DateToday + "' AND `UserID` = " + LoginWindow.UserID);
 
 			while (rs.next()) {
 
@@ -1019,11 +1031,14 @@ public class MainWindow extends JFrame {
 		PieChart.Data slice1 = new PieChart.Data("Carbs", 1);
 		PieChart.Data slice2 = new PieChart.Data("Proteins", 1);
 		PieChart.Data slice3 = new PieChart.Data("Fats", 1);
-
+		
 		if (Carbo != 0 || Whey != 0 || Fats != 0) {
-			slice1 = new PieChart.Data("Carbs " + Carbo + " g", Carbo);
-			slice2 = new PieChart.Data("Proteins " + Whey + " g", Whey);
-			slice3 = new PieChart.Data("Fats " + Fats + " g", Fats);
+			
+			double total = Carbo + Whey + Fats;
+			
+			slice1 = new PieChart.Data("Carbs " + Math.round(Carbo*100/total) + "%", Carbo);
+			slice2 = new PieChart.Data("Whey "  + Math.round(Whey*100/total) + "%", Whey);
+			slice3 = new PieChart.Data("Fats " + Math.round(Fats*100/total) + "%", Fats);
 		}
 
 		else {

@@ -21,14 +21,13 @@
 }
 
 .chart-pie-label-line {
-    -fx-stroke: white;
-    -fx-fill: white;
+    -fx-stroke: black;
+    -fx-fill: black;
 }
 
 .chart-pie-label {
-    -fx-fill: yellow;
+    -fx-fill: black;
     -fx-font-size: 1.3em;
     -fx-font-weight: bold;
     -fx-font-family: Tahoma;
-    -fx-stroke: red;
 } 

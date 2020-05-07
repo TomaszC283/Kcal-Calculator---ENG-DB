@@ -312,16 +312,16 @@ public class AddProductWindow {
 		try
 	    {
 	      String myDriver = "com.mysql.cj.jdbc.Driver";
-	      String myUrl = "jdbc:mysql://localhost:3306/kcal?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=utf-8";
+	      String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 	      Class.forName(myDriver);
 	      
-	      Connection conn = DriverManager.getConnection(myUrl, "root", "start00#");
+	      Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
 	      
 	      Statement st = conn.createStatement();
 	      
 	      String ValuesSTR = products.getProductName() + "' , " + products.getProductCarbo() + ", " + products.getProductWhey() +", " + products.getProductFats();
 
-	      st.executeUpdate("INSERT INTO Products (ProductName, ProductCarbo, ProductWhey, ProductFats)"
+	      st.executeUpdate("INSERT INTO products (ProductName, ProductCarbo, ProductWhey, ProductFats)"
 	          + " VALUES ('" + ValuesSTR + ")");
 	      
 	      conn.close(); 
