@@ -26,7 +26,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 import TomaszC283.main.java.Products;
 
-public class AddProductWindow {
+public class AddProductWindow extends JFrame {
 
 	private JFrame dpFrame;
 	Products products = new Products();
@@ -35,7 +35,6 @@ public class AddProductWindow {
 	
 	// Icons
 	ImageIcon deleteImage = new ImageIcon("src/TomaszC283/main/java/resources/delete.png");
-	ImageIcon plusImage = new ImageIcon("src/TomaszC283/main/java/resources/plus.png");
 	ImageIcon background = new ImageIcon("src/TomaszC283/main/java/resources/add_product.jpg");
 	
 	public void NewWindow() {
@@ -65,14 +64,14 @@ public class AddProductWindow {
 		
 		backgroundLabel = new JLabel("", background, JLabel.CENTER);
 		backgroundLabel.setBounds(0,0,550,434);
-		backgroundLabel.setBorder(new LineBorder(Color.white, 4));
+		backgroundLabel.setBorder(new LineBorder(new Color(255,255,255,0), 80));
 		
 		dpFrame.add(backgroundLabel);
 		
 		JLabel ProductName = new JLabel("  Product name : ");
 		JLabel macroLabel = new JLabel("   Enter the amount of macroelements per 100g : ");
 		JLabel CarboMacro = new JLabel("  Carbohybrates : ");
-		JLabel WheyMacro = new JLabel("       Proteins : ");
+		JLabel WheyMacro = new JLabel("      Proteins : ");
 		JLabel FatsMacro = new JLabel("         Fats : ");
 
 		final JTextField ProductNameTF = new JTextField(16);
@@ -98,6 +97,11 @@ public class AddProductWindow {
 		CarboTF.setBackground(Color.WHITE);
 		WheyTF.setBackground(Color.WHITE);
 		FatsTF.setBackground(Color.WHITE);
+		
+		ProductNameTF.setBorder(new LineBorder(Color.BLACK, 1));
+		CarboTF.setBorder(new LineBorder(Color.BLACK, 1));
+		WheyTF.setBorder(new LineBorder(Color.BLACK, 1));
+		FatsTF.setBorder(new LineBorder(Color.BLACK, 1));
 
 		ProductNameTF.setHorizontalAlignment(JTextField.CENTER);
 		CarboTF.setHorizontalAlignment(JTextField.CENTER);
@@ -112,13 +116,12 @@ public class AddProductWindow {
 		JPanel AuxTopPanel4c = new JPanel();
 		JPanel AuxTopPanel5 = new JPanel();
 
-		backgroundLabel.setLayout(new GridLayout(6, 1));
-		AuxTopPanel4a.setLayout(new GridLayout(2, 1));
-		AuxTopPanel4b.setLayout(new GridLayout(2, 1));
-		AuxTopPanel4c.setLayout(new GridLayout(2, 1));
-
-		JLabel paddingLabel1 = new JLabel("                          ");
-		JLabel paddingLabel2 = new JLabel("                          ");
+		backgroundLabel.setLayout(new GridLayout(4, 1, 2, 5));
+		AuxTopPanel4a.setLayout(new GridLayout(2, 1, 0, 5));
+		AuxTopPanel4b.setLayout(new GridLayout(2, 1, 0, 5));
+		AuxTopPanel4c.setLayout(new GridLayout(2, 1, 0, 5));
+		AuxTopPanel5.setLayout(new GridLayout(1, 2, 10,10));
+		AuxTopPanel5.setBorder(new LineBorder(new Color(255,255,255,0), 10));
 		
 		AuxTopPanel2.setOpaque(false);
 		AuxTopPanel3.setOpaque(false);
@@ -128,11 +131,20 @@ public class AddProductWindow {
 		AuxTopPanel4c.setOpaque(false);
 		AuxTopPanel5.setOpaque(false);
 
-		JButton AddButton = new JButton("   Add Product to Database      ", plusImage);
+		JButton AddButton = new JButton("Add new product");
+		JButton returnButton = new JButton(" Return ");
+		
 		AddButton.setBackground(Color.DARK_GRAY);
+		returnButton.setBackground(Color.DARK_GRAY);
+		
 		AddButton.setForeground(Color.WHITE);
+		returnButton.setForeground(Color.WHITE);
+		
 		AddButton.setBorder(new LineBorder(Color.WHITE, 1));
+		returnButton.setBorder(new LineBorder(Color.WHITE, 1));
+		
 		AddButton.setFont(new Font("Dialog", Font.BOLD, 14));
+		returnButton.setFont(new Font("Dialog", Font.BOLD, 14));
 
 		ProductName.setFont(new Font("Dialog", Font.BOLD | Font.BOLD, 17));
 		macroLabel.setFont(new Font("Dialog", Font.BOLD | Font.BOLD, 17));
@@ -140,18 +152,16 @@ public class AddProductWindow {
 		WheyMacro.setFont(new Font("Dialog", Font.BOLD, 16));
 		FatsMacro.setFont(new Font("Dialog", Font.BOLD, 16));
 
-		ProductName.setForeground(Color.DARK_GRAY);
-		macroLabel.setForeground(Color.DARK_GRAY);
-		CarboMacro.setForeground(Color.DARK_GRAY);
-		WheyMacro.setForeground(Color.DARK_GRAY);
-		FatsMacro.setForeground(Color.DARK_GRAY);
+		ProductName.setForeground(Color.BLACK);
+		macroLabel.setForeground(Color.BLACK);
+		CarboMacro.setForeground(Color.BLACK);
+		WheyMacro.setForeground(Color.BLACK);
+		FatsMacro.setForeground(Color.BLACK);
 
-		backgroundLabel.add(paddingLabel1);
 		backgroundLabel.add(AuxTopPanel2);
 		backgroundLabel.add(AuxTopPanel3);
 		backgroundLabel.add(AuxTopPanel4);
 		backgroundLabel.add(AuxTopPanel5);
-		backgroundLabel.add(paddingLabel2);
 		
 		AuxTopPanel2.add(ProductName);
 		AuxTopPanel2.add(ProductNameTF);
@@ -166,7 +176,8 @@ public class AddProductWindow {
 		AuxTopPanel4.add(AuxTopPanel4b);
 		AuxTopPanel4.add(AuxTopPanel4c);
 		AuxTopPanel5.add(AddButton);
-
+		AuxTopPanel5.add(returnButton);
+		
 		// Actions
 
 		ProductNameTF.addFocusListener(new FocusListener() {
@@ -305,6 +316,12 @@ public class AddProductWindow {
 				}
 			}
 		});
+		
+		returnButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dpFrame.dispose();
+			}
+		});
 	}
 	
 	private void AddProductToDB()
@@ -315,7 +332,7 @@ public class AddProductWindow {
 	      String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 	      Class.forName(myDriver);
 	      
-	      Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
+	      Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
 	      
 	      Statement st = conn.createStatement();
 	      

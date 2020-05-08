@@ -189,7 +189,7 @@ public class Statistics {
 			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 			Class.forName(myDriver);
 
-			Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "lamel123");
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
 
 			Statement st = conn.createStatement();
 

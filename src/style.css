@@ -3,7 +3,7 @@
 .data2.chart-pie { -fx-pie-color: darkturquoise; }
 
 * {
-	-fx-text-fill: red;
+	-fx-text-fill: black;
 	-fx-font-weight: bold;
 	-fx-font-family: Tahoma;
 	-fx-label-line-length: 20;
@@ -11,7 +11,7 @@
 }
 .chart-pie {
 	-fx-border-width: 1;
-	-fx-border-color: white;
+	-fx-border-color: black;
 }
 
 .chart-legend {

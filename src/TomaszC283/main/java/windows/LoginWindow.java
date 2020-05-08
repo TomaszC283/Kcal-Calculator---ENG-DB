@@ -38,7 +38,7 @@ public class LoginWindow extends JFrame {
 	JButton exitButton = new JButton(" Close application ");
 
 	JPanel mainPanel;
-	JLabel header = new JLabel("    Select your username ");
+	JLabel header = new JLabel("      Select your username ");
 	JPanel userButtonPanel = new JPanel();
 
 	static JComboBox<String> userComboBox = new JComboBox<>();
@@ -168,7 +168,7 @@ public class LoginWindow extends JFrame {
 			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 			Class.forName(myDriver);
 
-			Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
 
 			Statement st = conn.createStatement();
 
@@ -197,7 +197,7 @@ public class LoginWindow extends JFrame {
 			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
 			Class.forName(myDriver);
 
-			Connection conn = DriverManager.getConnection(myUrl, "serwer58262", "start00#");
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
 
 			Statement st = conn.createStatement();
 
