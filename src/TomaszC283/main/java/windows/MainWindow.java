@@ -44,6 +44,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 import TomaszC283.main.java.DailyProducts;
+import TomaszC283.main.java.Main;
 import TomaszC283.main.java.Products;
 import TomaszC283.main.java.windows.AddProductWindow;
 import javafx.application.Platform;
@@ -654,7 +655,13 @@ public class MainWindow extends JFrame {
 								products.getProductName() + " successful deleted from Database", "Success!",
 								JOptionPane.INFORMATION_MESSAGE, deleteImage);
 
+						Main.productNameList.remove(products.getProductName());
+						Main.productCarbsMap.remove(products.getProductName());
+						Main.productWheyMap.remove(products.getProductName());
+						Main.productFatsMap.remove(products.getProductName());
 						RefreshComboBox();
+						filterTF.setText("");
+						
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 								deleteImage);
@@ -745,8 +752,8 @@ public class MainWindow extends JFrame {
 						}
 					}
 					comboBox.removeAllItems();
-					
-					for ( String filteredCBItems : filteredCBList ) {
+
+					for (String filteredCBItems : filteredCBList) {
 						comboBox.addItem(filteredCBItems);
 					}
 				}
@@ -854,85 +861,28 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-        comboBox.addItemListener(new ItemListener() {
-            // Listening if a new items of the combo box has been selected.
-            public void itemStateChanged(ItemEvent event) {
-                JComboBox comboBox = (JComboBox) event.getSource();
+		comboBox.addItemListener(new ItemListener() {
+			// Listening if a new items of the combo box has been selected.
+			public void itemStateChanged(ItemEvent event) {
+				JComboBox<String> comboBox = (JComboBox) event.getSource();
 
-                // The item affected by the event.
-                Object item = event.getItem();
+				if (event.getStateChange() == ItemEvent.SELECTED) {
 
-                if (event.getStateChange() == ItemEvent.SELECTED) {
-    				try {
-                	
-                						String myDriver = "com.mysql.cj.jdbc.Driver";
-                						String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
-                						Class.forName(myDriver);
-                	
-                						Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
-                	
-                						Statement st = conn.createStatement();
-                	
-                						ResultSet rs = st.executeQuery(
-                								"SELECT * FROM products WHERE ProductName = '" + comboBox.getSelectedItem() + "'");
-                	
-                						while (rs.next()) {
-                							selectedProdCarbs = rs.getDouble("ProductCarbo");
-                							selectedProdWhey = rs.getDouble("ProductWhey");
-                							selectedProdFats = rs.getDouble("ProductFats");
-                						}
-                	
-                						CarboTF.setText(String.format("%.2f", selectedProdCarbs));
-                						WheyTF.setText(String.format("%.2f", selectedProdWhey));
-                						FatsTF.setText(String.format("%.2f", selectedProdFats));
-                						KcalTF.setText(String.format("%.2f",
-                								(selectedProdCarbs * 4 + selectedProdWhey * 4 + selectedProdFats * 9)));
-                	
-                						conn.close();
-                	
-                					} catch (Exception ex) {
-                						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
-                								deleteImage);
-                					}
-                }
-            }
-        });
-		
-//		comboBox.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				try {
-//
-//					String myDriver = "com.mysql.cj.jdbc.Driver";
-//					String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
-//					Class.forName(myDriver);
-//
-//					Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
-//
-//					Statement st = conn.createStatement();
-//
-//					ResultSet rs = st.executeQuery(
-//							"SELECT * FROM products WHERE ProductName = '" + comboBox.getSelectedItem() + "'");
-//
-//					while (rs.next()) {
-//						selectedProdCarbs = rs.getDouble("ProductCarbo");
-//						selectedProdWhey = rs.getDouble("ProductWhey");
-//						selectedProdFats = rs.getDouble("ProductFats");
-//					}
-//
-//					CarboTF.setText(String.format("%.2f", selectedProdCarbs));
-//					WheyTF.setText(String.format("%.2f", selectedProdWhey));
-//					FatsTF.setText(String.format("%.2f", selectedProdFats));
-//					KcalTF.setText(String.format("%.2f",
-//							(selectedProdCarbs * 4 + selectedProdWhey * 4 + selectedProdFats * 9)));
-//
-//					conn.close();
-//
-//				} catch (Exception ex) {
-//					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
-//							deleteImage);
-//				}
-//			}
-//		});
+					String prodName = comboBox.getSelectedItem().toString();
+					
+					selectedProdCarbs = Main.productCarbsMap.get(prodName);
+					selectedProdWhey =  Main.productWheyMap.get(prodName);
+					selectedProdFats = Main.productFatsMap.get(prodName);
+
+					CarboTF.setText(String.format("%.2f", selectedProdCarbs));
+					WheyTF.setText(String.format("%.2f", selectedProdWhey));
+					FatsTF.setText(String.format("%.2f", selectedProdFats));
+					KcalTF.setText(String.format("%.2f",
+							(selectedProdCarbs * 4 + selectedProdWhey * 4 + selectedProdFats * 9)));
+				}
+			}
+		});
+
 
 		ButtonAddProd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1034,28 +984,11 @@ public class MainWindow extends JFrame {
 	}
 
 	static void RefreshComboBox() {
-		try {
 
-			String myDriver = "com.mysql.cj.jdbc.Driver";
-			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
-			Class.forName(myDriver);
+		comboBox.removeAllItems();
 
-			Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
-
-			Statement st = conn.createStatement();
-
-			ResultSet rs = st.executeQuery("SELECT * FROM products ORDER BY ProductName ASC");
-
-			comboBox.removeAllItems();
-
-			while (rs.next()) {
-				String name = rs.getString("ProductName");
-				comboBox.addItem(name);
-			}
-			conn.close();
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
-					deleteImage);
+		for (String name : Main.productNameList) {
+			comboBox.addItem(name);
 		}
 	}
 

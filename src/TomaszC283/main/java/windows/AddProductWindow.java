@@ -24,6 +24,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
+
+import TomaszC283.main.java.Main;
 import TomaszC283.main.java.Products;
 
 public class AddProductWindow extends JFrame {
@@ -32,6 +34,10 @@ public class AddProductWindow extends JFrame {
 	Products products = new Products();
 	private boolean AddSuccess;
 	private JLabel backgroundLabel;
+	private String prodName;
+	private double prodCarbo;
+	private double prodWhey;
+	private double prodFat;
 	
 	// Icons
 	ImageIcon deleteImage = new ImageIcon("src/TomaszC283/main/java/resources/delete.png");
@@ -336,12 +342,25 @@ public class AddProductWindow extends JFrame {
 	      
 	      Statement st = conn.createStatement();
 	      
-	      String ValuesSTR = products.getProductName() + "' , " + products.getProductCarbo() + ", " + products.getProductWhey() +", " + products.getProductFats();
+	      prodName = products.getProductName();
+	      prodCarbo = products.getProductCarbo();
+	      prodWhey = products.getProductWhey();
+	      prodFat = products.getProductFats();
+	      
+	      String ValuesSTR = prodName + "' , " + prodCarbo + ", " + prodWhey +", " + prodFat;
 
 	      st.executeUpdate("INSERT INTO products (ProductName, ProductCarbo, ProductWhey, ProductFats)"
 	          + " VALUES ('" + ValuesSTR + ")");
 	      
 	      conn.close(); 
+	      
+	      Main.productNameList.add(prodName);
+	      Main.productCarbsMap.put(prodName, prodCarbo);
+	      Main.productWheyMap.put(prodName, prodWhey);
+	      Main.productFatsMap.put(prodName, prodFat);
+	      
+	      MainWindow.RefreshComboBox();
+	      
 	    }
 			    
 	    catch (Exception e)
