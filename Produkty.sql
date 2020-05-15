@@ -18,6 +18,7 @@ CREATE TABLE `dailyproducts` (
 DROP TABLE IF EXISTS `products`;
 CREATE TABLE `products` (
   `ProductID` int(11) NOT NULL AUTO_INCREMENT,
+  `userID` INT(11) NOT NULL,
   `ProductName` varchar(255) DEFAULT NULL,
   `ProductCarbo` double DEFAULT NULL,
   `ProductWhey` double DEFAULT NULL,
@@ -28,8 +29,8 @@ CREATE TABLE `products` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `userID` int(11) NOT NULL AUTO_INCREMENT,
-  `userName` varchar(255) DEFAULT NULL,
-  `bodyWeight` double DEFAULT NULL,
+  `userName` varchar(255) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
   `preferedKcal` int DEFAULT NULL,
   PRIMARY KEY (`userID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=UTF8;

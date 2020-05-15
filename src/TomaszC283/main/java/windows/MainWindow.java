@@ -44,7 +44,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 import TomaszC283.main.java.DailyProducts;
-import TomaszC283.main.java.Main;
 import TomaszC283.main.java.Products;
 import TomaszC283.main.java.windows.AddProductWindow;
 import javafx.application.Platform;
@@ -113,9 +112,8 @@ public class MainWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow window = new MainWindow();
-					window.setVisible(true);
-					window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					setVisible(true);
+					setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -126,7 +124,7 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 
 		super("Fitness Calculator");
-		setSize(1147, 700);
+		setSize(1300, 731);
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) ((dimension.getWidth() - 1147) / 2);
 		int y = (int) ((dimension.getHeight() - 700) / 2);
@@ -137,7 +135,7 @@ public class MainWindow extends JFrame {
 		// background
 		backgroundLabel = new JLabel("", background, JLabel.CENTER);
 		backgroundLabel.setBounds(0, 0, 1147, 700);
-		backgroundLabel.setBorder(new LineBorder(Color.white, 4));
+		backgroundLabel.setBorder(new LineBorder(new Color(255,255,255,0), 50));
 
 		add(backgroundLabel);
 
@@ -163,10 +161,8 @@ public class MainWindow extends JFrame {
 		TotalFatsTF.setForeground(Color.BLACK);
 		TotalKcalTF.setForeground(Color.BLACK);
 
-		// Update combobox
 		RefreshComboBox();
-
-		KcalSlider.setOpaque(false);
+		comboBox.setSelectedItem(null);
 
 		// Create JTable
 		String[] columnNames = { "Product", "Meal", "Weight", "Carbs", "Proteins", "Fats", "KCal" };
@@ -655,10 +651,10 @@ public class MainWindow extends JFrame {
 								products.getProductName() + " successful deleted from Database", "Success!",
 								JOptionPane.INFORMATION_MESSAGE, deleteImage);
 
-						Main.productNameList.remove(products.getProductName());
-						Main.productCarbsMap.remove(products.getProductName());
-						Main.productWheyMap.remove(products.getProductName());
-						Main.productFatsMap.remove(products.getProductName());
+						LoginWindow.productNameList.remove(products.getProductName());
+						LoginWindow.productCarbsMap.remove(products.getProductName());
+						LoginWindow.productWheyMap.remove(products.getProductName());
+						LoginWindow.productFatsMap.remove(products.getProductName());
 						RefreshComboBox();
 						filterTF.setText("");
 						
@@ -864,15 +860,17 @@ public class MainWindow extends JFrame {
 		comboBox.addItemListener(new ItemListener() {
 			// Listening if a new items of the combo box has been selected.
 			public void itemStateChanged(ItemEvent event) {
-				JComboBox<String> comboBox = (JComboBox) event.getSource();
+				
+				@SuppressWarnings("unchecked")
+				JComboBox<String> comboBox =  (JComboBox<String>) event.getSource();
 
 				if (event.getStateChange() == ItemEvent.SELECTED) {
 
 					String prodName = comboBox.getSelectedItem().toString();
 					
-					selectedProdCarbs = Main.productCarbsMap.get(prodName);
-					selectedProdWhey =  Main.productWheyMap.get(prodName);
-					selectedProdFats = Main.productFatsMap.get(prodName);
+					selectedProdCarbs = LoginWindow.productCarbsMap.get(prodName);
+					selectedProdWhey =  LoginWindow.productWheyMap.get(prodName);
+					selectedProdFats = LoginWindow.productFatsMap.get(prodName);
 
 					CarboTF.setText(String.format("%.2f", selectedProdCarbs));
 					WheyTF.setText(String.format("%.2f", selectedProdWhey));
@@ -987,7 +985,7 @@ public class MainWindow extends JFrame {
 
 		comboBox.removeAllItems();
 
-		for (String name : Main.productNameList) {
+		for (String name : LoginWindow.productNameList) {
 			comboBox.addItem(name);
 		}
 	}

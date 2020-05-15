@@ -25,9 +25,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+
+import TomaszC283.main.java.PasswordCrypt;
 
 public class AddUserWindow extends JFrame {
 
@@ -40,53 +43,53 @@ public class AddUserWindow extends JFrame {
 	private JPanel mainPanel = new JPanel();
 	private JLabel paddingLabel1 = new JLabel(" ");
 	private JLabel paddingLabel2 = new JLabel(" ");
-	
+
 	private JLabel header = new JLabel("Enter your profile");
 	private JLabel header2 = new JLabel(" details :");
-	private JLabel userName = new JLabel      ("Username :  ");
+	private JLabel userName = new JLabel("Username :  ");
+	private JLabel password = new JLabel("Password :  ");
 	private JLabel userBodyWeight = new JLabel("Body weight :  ");
-	private JLabel userKcalGoal = new JLabel  ("Set kcal goal :  ");
-	
+	private JLabel userKcalGoal = new JLabel("Set kcal goal :  ");
+
 	private JTextField userNameTF = new JTextField(15);
+	private JPasswordField passwordTF = new JPasswordField(15);
 	private JTextField userBodyWeightTF = new JTextField(15);
 	private JTextField userKcalGoalTF = new JTextField(15);
-	
+
 	private JButton addUserButton = new JButton("          Apply          ");
 	private JButton returnButton = new JButton("          Abort          ");
-	
+
 	// VARIABLES
 	private int userID;
 	private double userBW;
 	private double userKG;
-	
+
 	public void NewWindow() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AddUserWindow window = new AddUserWindow();
-					window.setVisible(true);
-					window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					setVisible(true);
+					setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
 	}
-	
+
 	AddUserWindow() {
 		super("Fitness Calculator - Add new User");
-		setSize(550,434);
-	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-	    int x = (int) ((dimension.getWidth() - 550) / 2);
-	    int y = (int) ((dimension.getHeight() - 434) / 2);
-	    setLocation(x, y);
+		setSize(550, 434);
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) ((dimension.getWidth() - 550) / 2);
+		int y = (int) ((dimension.getHeight() - 434) / 2);
+		setLocation(x, y);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
-		
-		// background
+
 		backgroundLabel = new JLabel("", background, JLabel.CENTER);
-		backgroundLabel.setBounds(0,0,550,434);
-		backgroundLabel.setBorder(new LineBorder(new Color(255,255,255,0), 30));
+		backgroundLabel.setBounds(0, 0, 550, 434);
+		backgroundLabel.setBorder(new LineBorder(new Color(255, 255, 255, 0), 30));
 
 		add(backgroundLabel);
 		backgroundLabel.setLayout(new BorderLayout());
@@ -94,101 +97,105 @@ public class AddUserWindow extends JFrame {
 		backgroundLabel.add(paddingLabel2, BorderLayout.SOUTH);
 		backgroundLabel.add(header, BorderLayout.NORTH);
 		backgroundLabel.add(mainPanel, BorderLayout.CENTER);
-		
-		mainPanel.setLayout(new GridLayout(5,2, 2, 12));
+
+		mainPanel.setLayout(new GridLayout(6, 2, 2, 12));
 		mainPanel.setOpaque(false);
-		
+
 		mainPanel.add(header);
 		mainPanel.add(header2);
 		mainPanel.add(userName);
 		mainPanel.add(userNameTF);
+		mainPanel.add(password);
+		mainPanel.add(passwordTF);
 		mainPanel.add(userBodyWeight);
 		mainPanel.add(userBodyWeightTF);
 		mainPanel.add(userKcalGoal);
 		mainPanel.add(userKcalGoalTF);
 		mainPanel.add(addUserButton);
 		mainPanel.add(returnButton);
-		
-		mainPanel.setBorder(new LineBorder(new Color(255,255,255,0),75));
+
+		mainPanel.setBorder(new LineBorder(new Color(255, 255, 255, 0), 60));
 		addUserButton.setBorder(new LineBorder(Color.WHITE, 1));
 		returnButton.setBorder(new LineBorder(Color.WHITE, 1));
-		
-		addUserButton.setForeground(Color.WHITE);
-		returnButton.setForeground(Color.WHITE);
-		header.setForeground(Color.BLACK);
-		header2.setForeground(Color.BLACK);
-		userName.setForeground(Color.BLACK);
-		userBodyWeight.setForeground(Color.BLACK);
-		userKcalGoal.setForeground(Color.BLACK);
+
 		addUserButton.setBackground(Color.DARK_GRAY);
 		returnButton.setBackground(Color.DARK_GRAY);
-		
+		addUserButton.setForeground(Color.WHITE);
+		returnButton.setForeground(Color.WHITE);
+
 		addUserButton.setFont(new Font("Dialog", Font.BOLD, 15));
 		returnButton.setFont(new Font("Dialog", Font.BOLD, 15));
 		userName.setFont(new Font("Dialog", Font.BOLD, 15));
+		password.setFont(new Font("Dialog", Font.BOLD, 15));
 		userBodyWeight.setFont(new Font("Dialog", Font.BOLD, 15));
 		userKcalGoal.setFont(new Font("Dialog", Font.BOLD, 15));
 		header.setFont(new Font("Dialog", Font.BOLD, 20));
 		header2.setFont(new Font("Dialog", Font.BOLD, 20));
-		
+
 		userName.setHorizontalAlignment(SwingConstants.RIGHT);
+		password.setHorizontalAlignment(SwingConstants.RIGHT);
 		userBodyWeight.setHorizontalAlignment(SwingConstants.RIGHT);
 		userKcalGoal.setHorizontalAlignment(SwingConstants.RIGHT);
-		
+
 		userNameTF.setBorder(new LineBorder(Color.BLACK, 1));
+		passwordTF.setBorder(new LineBorder(Color.BLACK, 1));
 		userBodyWeightTF.setBorder(new LineBorder(Color.BLACK, 1));
 		userKcalGoalTF.setBorder(new LineBorder(Color.BLACK, 1));
+		passwordTF.setEchoChar('*');
 		
 		addUserButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!userNameTF.getText().equals("") && !userBodyWeightTF.getText().equals("") && !userKcalGoalTF.getText().equals("")) {
-					
-					try {
+				if (checkUserExisting(userNameTF.getText())) {
+					if (!userNameTF.getText().equals("") && !userBodyWeightTF.getText().equals("")
+							&& !userKcalGoalTF.getText().equals("") && !passwordTF.getPassword().toString().equals("")) {
+						try {
 
-						String myDriver = "com.mysql.cj.jdbc.Driver";
-						String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
-						Class.forName(myDriver);
+							String myDriver = "com.mysql.cj.jdbc.Driver";
+							String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+							Class.forName(myDriver);
 
-						Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
+							Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
 
-						Statement st = conn.createStatement();
-						
-						userBW = Double.parseDouble(userBodyWeightTF.getText());
-						userKG = Double.parseDouble(userKcalGoalTF.getText());
-						DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-						Date date = new Date();
-						st.executeUpdate(
-								"INSERT INTO users (userName, preferedKcal)"
-										+ " VALUES ('" + userNameTF.getText() + "'," + userKG + ")");
-						
-						ResultSet rs = st.executeQuery("SELECT * FROM users WHERE `userName` = '" + userNameTF.getText() + "'");
-						
-						while (rs.next()) {
-							userID = rs.getInt("userID");
+							Statement st = conn.createStatement();
+
+							userBW = Double.parseDouble(userBodyWeightTF.getText());
+							userKG = Double.parseDouble(userKcalGoalTF.getText());
+							DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+							Date date = new Date();
+							st.executeUpdate("INSERT INTO users (userName, password, preferedKcal)" + " VALUES ('"
+									+ userNameTF.getText() + "','" + PasswordCrypt.passwordEncoder(new String(passwordTF.getPassword())) + "'," + userKG + ")");
+
+							ResultSet rs = st.executeQuery(
+									"SELECT * FROM users WHERE `userName` = '" + userNameTF.getText() + "'");
+
+							while (rs.next()) {
+								userID = rs.getInt("userID");
+							}
+
+							st = conn.createStatement();
+							st.executeUpdate("INSERT INTO usersweight (userID, date, bodyWeight) VALUES (" + userID
+									+ ", '" + dateFormat.format(date) + "', " + userBW + ")");
+
+							conn.close();
+							dispose();
+
+							JOptionPane.showMessageDialog(null,
+									"User " + userNameTF.getText() + " is successfully added to the database",
+									"Success!", JOptionPane.INFORMATION_MESSAGE, null);
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!",
+									JOptionPane.INFORMATION_MESSAGE, deleteImage);
 						}
-						
-						st = conn.createStatement();
-						st.executeUpdate("INSERT INTO usersweight (userID, date, bodyWeight) VALUES (" + userID + ", '" + dateFormat.format(date) + "', " + userBW + ")");
-						
-						conn.close();
-						LoginWindow.refreshUsersCB();
-						dispose();
-						
-						JOptionPane.showMessageDialog(null, "User " + userNameTF.getText() + " is successfully added to the database" , "Success!", JOptionPane.INFORMATION_MESSAGE,
-								null);
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
-								deleteImage);
 					}
-				}
-				
-				else {
-					JOptionPane.showMessageDialog(null, "     Complete all fields", "Error",
-							JOptionPane.INFORMATION_MESSAGE, null);
+
+					else {
+						JOptionPane.showMessageDialog(null, "   Complete all fields", "Error",
+								JOptionPane.INFORMATION_MESSAGE, null);
+					}
 				}
 			}
 		});
-		
+
 		userBodyWeightTF.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -196,7 +203,6 @@ public class AddUserWindow extends JFrame {
 
 			@Override
 			public void keyReleased(KeyEvent evt) {
-
 
 			}
 
@@ -214,17 +220,17 @@ public class AddUserWindow extends JFrame {
 				if (c == KeyEvent.VK_COMMA) {
 					evt.setKeyChar((char) KeyEvent.VK_PERIOD);
 				}
-				
+
 				if (weightString.contains(".") && c == KeyEvent.VK_PERIOD) {
 					evt.consume();
 				}
-				
+
 				if (weightString.contains(".") && c == KeyEvent.VK_COMMA) {
 					evt.consume();
 				}
 			}
 		});
-		
+
 		userKcalGoalTF.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -232,7 +238,6 @@ public class AddUserWindow extends JFrame {
 
 			@Override
 			public void keyReleased(KeyEvent evt) {
-
 
 			}
 
@@ -250,22 +255,51 @@ public class AddUserWindow extends JFrame {
 				if (c == KeyEvent.VK_COMMA) {
 					evt.setKeyChar((char) KeyEvent.VK_PERIOD);
 				}
-				
+
 				if (kcalGoalString.contains(".") && c == KeyEvent.VK_PERIOD) {
 					evt.consume();
 				}
-				
+
 				if (kcalGoalString.contains(".") && c == KeyEvent.VK_COMMA) {
 					evt.consume();
 				}
 			}
 		});
-		
+
 		returnButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
 		});
 	}
-	
+
+	public Boolean checkUserExisting(String userName) {
+		try {
+
+			String myDriver = "com.mysql.cj.jdbc.Driver";
+			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
+			Class.forName(myDriver);
+
+			Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
+
+			Statement st = conn.createStatement();
+
+			ResultSet rs = st.executeQuery("SELECT * FROM users WHERE `userName` = '" + userName + "'");
+
+			while (rs.next()) {
+				JOptionPane.showMessageDialog(null, "      Username already exists ! Please, type another username.",
+						"Error!", JOptionPane.INFORMATION_MESSAGE, deleteImage);
+				return false;
+			}
+
+			conn.close();
+
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
+					deleteImage);
+		}
+
+		return true;
+	}
+
 }

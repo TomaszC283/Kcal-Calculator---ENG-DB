@@ -21,9 +21,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+
+import TomaszC283.main.java.PasswordCrypt;
 
 public class EditUserWindow extends JFrame {
 
@@ -38,9 +41,11 @@ public class EditUserWindow extends JFrame {
 	private JLabel header = new JLabel("    Change your ");
 	private JLabel header2 = new JLabel(" profile details :");
 	private JLabel userName = new JLabel("  New username :    ");
+	private JLabel password = new JLabel(" New password :    ");
 	private JLabel userKcalGoal = new JLabel(" New kcal goal :    ");
 
 	private JTextField userNameTF = new JTextField(15);
+	private JPasswordField passwordTF = new JPasswordField(15);
 	private JTextField userKcalGoalTF = new JTextField(15);
 
 	private JButton applyButton = new JButton("          Apply          ");
@@ -50,9 +55,8 @@ public class EditUserWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					EditUserWindow window = new EditUserWindow();
-					window.setVisible(true);
-					window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					setVisible(true);
+					setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -73,19 +77,21 @@ public class EditUserWindow extends JFrame {
 		// background
 		backgroundLabel = new JLabel("", background, JLabel.CENTER);
 		backgroundLabel.setBounds(0, 0, 550, 434);
-		backgroundLabel.setBorder(new LineBorder(new Color(255,255,255,0),40));
+		backgroundLabel.setBorder(new LineBorder(new Color(255, 255, 255, 0), 40));
 
 		add(backgroundLabel);
 		backgroundLabel.setLayout(new BorderLayout());
 		backgroundLabel.add(mainPanel, BorderLayout.CENTER);
 
-		mainPanel.setLayout(new GridLayout(4, 2, 1, 10));
+		mainPanel.setLayout(new GridLayout(5, 2, 1, 10));
 		mainPanel.setOpaque(false);
 
 		mainPanel.add(header);
 		mainPanel.add(header2);
 		mainPanel.add(userName);
 		mainPanel.add(userNameTF);
+		mainPanel.add(password);
+		mainPanel.add(passwordTF);
 		mainPanel.add(userKcalGoal);
 		mainPanel.add(userKcalGoalTF);
 		mainPanel.add(applyButton);
@@ -97,23 +103,21 @@ public class EditUserWindow extends JFrame {
 
 		applyButton.setForeground(Color.WHITE);
 		returnButton.setForeground(Color.WHITE);
-		header.setForeground(Color.BLACK);
-		header2.setForeground(Color.BLACK);
-		userName.setForeground(Color.BLACK);
-		userKcalGoal.setForeground(Color.BLACK);
 
 		userName.setHorizontalAlignment(SwingConstants.RIGHT);
+		password.setHorizontalAlignment(SwingConstants.RIGHT);
 		userKcalGoal.setHorizontalAlignment(SwingConstants.RIGHT);
-		
+
 		userNameTF.setBorder(new LineBorder(Color.BLACK, 1));
 		userKcalGoalTF.setBorder(new LineBorder(Color.BLACK, 1));
-		
+
 		applyButton.setBackground(Color.DARK_GRAY);
 		returnButton.setBackground(Color.DARK_GRAY);
 
 		applyButton.setFont(new Font("Dialog", Font.BOLD, 14));
 		returnButton.setFont(new Font("Dialog", Font.BOLD, 14));
 		userName.setFont(new Font("Dialog", Font.BOLD, 14));
+		password.setFont(new Font("Dialog", Font.BOLD, 14));
 		userKcalGoal.setFont(new Font("Dialog", Font.BOLD, 14));
 		header.setFont(new Font("Dialog", Font.BOLD, 19));
 		header2.setFont(new Font("Dialog", Font.BOLD, 19));
@@ -149,9 +153,12 @@ public class EditUserWindow extends JFrame {
 								+ " WHERE userName = '" + LoginWindow.userName + "'");
 					}
 
+					if (!(new String(passwordTF.getPassword()).equals(""))) {
+						st.executeUpdate("UPDATE users SET password = '"
+								+ PasswordCrypt.passwordEncoder(new String(passwordTF.getPassword()))
+								+ "' WHERE userName = '" + LoginWindow.userName + "'");
+					}
 					conn.close();
-					LoginWindow.refreshUsersCB();
-					LoginWindow.userComboBox.setSelectedItem(LoginWindow.userName);
 					dispose();
 
 					JOptionPane.showMessageDialog(null, "User " + userNameTF.getText() + " is successfully edited!",

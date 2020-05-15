@@ -25,7 +25,6 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
-import TomaszC283.main.java.Main;
 import TomaszC283.main.java.Products;
 
 public class AddProductWindow extends JFrame {
@@ -47,8 +46,7 @@ public class AddProductWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AddProductWindow window = new AddProductWindow();
-					window.dpFrame.setVisible(true);
+					dpFrame.setVisible(true);
 					dpFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -347,17 +345,17 @@ public class AddProductWindow extends JFrame {
 	      prodWhey = products.getProductWhey();
 	      prodFat = products.getProductFats();
 	      
-	      String ValuesSTR = prodName + "' , " + prodCarbo + ", " + prodWhey +", " + prodFat;
+	      String ValuesSTR = LoginWindow.UserID + ",'" + prodName + "' , " + prodCarbo + ", " + prodWhey +", " + prodFat;
 
-	      st.executeUpdate("INSERT INTO products (ProductName, ProductCarbo, ProductWhey, ProductFats)"
-	          + " VALUES ('" + ValuesSTR + ")");
+	      st.executeUpdate("INSERT INTO products (userID, ProductName, ProductCarbo, ProductWhey, ProductFats)"
+	          + " VALUES (" + ValuesSTR + ")");
 	      
 	      conn.close(); 
 	      
-	      Main.productNameList.add(prodName);
-	      Main.productCarbsMap.put(prodName, prodCarbo);
-	      Main.productWheyMap.put(prodName, prodWhey);
-	      Main.productFatsMap.put(prodName, prodFat);
+	      LoginWindow.productNameList.add(prodName);
+	      LoginWindow.productCarbsMap.put(prodName, prodCarbo);
+	      LoginWindow.productWheyMap.put(prodName, prodWhey);
+	      LoginWindow.productFatsMap.put(prodName, prodFat);
 	      
 	      MainWindow.RefreshComboBox();
 	      

@@ -42,6 +42,20 @@ public class AddBW extends JFrame {
 	private JLabel padding = new JLabel("");
 	private JLabel header = new JLabel("Enter your today's body weight :");
 	private JTextField bwTF = new JTextField();
+
+	public void NewWindow() {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					setVisible(true);
+					setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
 	AddBW() {
 		super("Fitness Calculator - Add Today's BW");
 		setSize(550, 434);
@@ -66,13 +80,12 @@ public class AddBW extends JFrame {
 		backgroundLabel.add(mainPanel, BorderLayout.CENTER);
 		mainPanel.setLayout(new GridLayout(5, 1, 10, 10));
 
-
 		mainPanel.add(padding);
 		mainPanel.add(header);
 		mainPanel.add(bwTF);
 		mainPanel.add(applyButton);
 		mainPanel.add(returnButton);
-		
+
 		header.setForeground(Color.BLACK);
 		header.setFont(new Font("Dialog", Font.BOLD, 20));
 
@@ -82,20 +95,20 @@ public class AddBW extends JFrame {
 
 		applyButton.setBackground(Color.DARK_GRAY);
 		returnButton.setBackground(Color.DARK_GRAY);
-		
+
 		applyButton.setFont(new Font("Dialog", Font.BOLD, 14));
 		returnButton.setFont(new Font("Dialog", Font.BOLD, 14));
-		
+
 		applyButton.setForeground(Color.WHITE);
 		returnButton.setForeground(Color.WHITE);
-		
+
 		applyButton.setBorder(new LineBorder(Color.WHITE, 1));
 		returnButton.setBorder(new LineBorder(Color.WHITE, 1));
-		
+
 		applyButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				
+
 				try {
 
 					String myDriver = "com.mysql.cj.jdbc.Driver";
@@ -105,27 +118,27 @@ public class AddBW extends JFrame {
 					Connection conn = DriverManager.getConnection(myUrl, "serwer58262_Kcal", "kcal00#");
 
 					Statement st = conn.createStatement();
-					
+
 					DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 					Date date = new Date();
-					
-					st.executeUpdate(
-							"INSERT INTO usersweight VALUES (" + LoginWindow.UserID + ", '" + dateFormat.format(date) + "', " + Double.parseDouble(bwTF.getText()) + ")");
-					
+
+					st.executeUpdate("INSERT INTO usersweight VALUES (" + LoginWindow.UserID + ", '"
+							+ dateFormat.format(date) + "', " + Double.parseDouble(bwTF.getText()) + ")");
+
 					conn.close();
 					dispose();
-					
-					JOptionPane.showMessageDialog(null, "BW is successfully added to the database" , "Success!", JOptionPane.INFORMATION_MESSAGE,
-							null);
+
+					JOptionPane.showMessageDialog(null, "BW is successfully added to the database", "Success!",
+							JOptionPane.INFORMATION_MESSAGE, null);
 				} catch (Exception ex) {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 							deleteImage);
 				}
-				
+
 			}
 
 		});
-		
+
 		bwTF.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -133,7 +146,6 @@ public class AddBW extends JFrame {
 
 			@Override
 			public void keyReleased(KeyEvent evt) {
-
 
 			}
 
@@ -151,17 +163,17 @@ public class AddBW extends JFrame {
 				if (c == KeyEvent.VK_COMMA) {
 					evt.setKeyChar((char) KeyEvent.VK_PERIOD);
 				}
-				
+
 				if (weightString.contains(".") && c == KeyEvent.VK_PERIOD) {
 					evt.consume();
 				}
-				
+
 				if (weightString.contains(".") && c == KeyEvent.VK_COMMA) {
 					evt.consume();
 				}
 			}
 		});
-		
+
 		returnButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
@@ -169,17 +181,5 @@ public class AddBW extends JFrame {
 		});
 	}
 
-	public void NewWindow() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AddBW window = new AddBW();
-					window.setVisible(true);
-					window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+
 }
