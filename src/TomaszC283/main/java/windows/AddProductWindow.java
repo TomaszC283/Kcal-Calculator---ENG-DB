@@ -136,6 +136,7 @@ public class AddProductWindow extends JFrame {
 		AuxTopPanel5.setOpaque(false);
 
 		JButton AddButton = new JButton("Add new product");
+		dpFrame.getRootPane().setDefaultButton(AddButton);
 		JButton returnButton = new JButton(" Return ");
 		
 		AddButton.setBackground(Color.DARK_GRAY);
@@ -316,7 +317,7 @@ public class AddProductWindow extends JFrame {
 					WheyTF.setText("0");
 					FatsTF.setText("0");
 					AddSuccess = false;
-					MainWindow.RefreshComboBox();
+					MainWindow.RefreshComboBox("");
 				}
 			}
 		});
@@ -357,7 +358,7 @@ public class AddProductWindow extends JFrame {
 	      LoginWindow.productWheyMap.put(prodName, prodWhey);
 	      LoginWindow.productFatsMap.put(prodName, prodFat);
 	      
-	      MainWindow.RefreshComboBox();
+	      MainWindow.RefreshComboBox("");
 	      
 	    }
 			    

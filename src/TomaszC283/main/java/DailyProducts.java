@@ -10,7 +10,6 @@ public class DailyProducts {
 	private double Fats;
 	@SuppressWarnings("unused")
 	private double Kcal;
-	private int MealNo;
 	private double Weight;
 	
 	public double getWeight() {
@@ -60,11 +59,5 @@ public class DailyProducts {
 	}
 	public void setFats(double fats) {
 		Fats = fats;
-	}
-	public int getMealNo() {
-		return MealNo;
-	}
-	public void setMealNo(int mealNo) {
-		MealNo = mealNo;
 	}
 }

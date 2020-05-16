@@ -20,11 +20,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -58,7 +55,6 @@ public class MainWindow extends JFrame {
 	// GUI
 
 	private static JComboBox<String> comboBox = new JComboBox<>();
-	JComboBox<Integer> comboBoxNr = new JComboBox<>();
 
 	public static JSlider KcalSlider = new JSlider(0, LoginWindow.UserKcalGoal + 1000, 0);
 	private static JTextField TotalCarboTF = new JTextField(13);
@@ -97,7 +93,6 @@ public class MainWindow extends JFrame {
 	final JFXPanel fxPanel = new JFXPanel();
 
 	// Variables
-	private int NoOfMeal;
 	private double Weight;
 	private double selectedProdCarbs;
 	private double selectedProdWhey;
@@ -161,7 +156,7 @@ public class MainWindow extends JFrame {
 		TotalFatsTF.setForeground(Color.BLACK);
 		TotalKcalTF.setForeground(Color.BLACK);
 
-		RefreshComboBox();
+		RefreshComboBox("");
 		comboBox.setSelectedItem(null);
 
 		// Create JTable
@@ -281,7 +276,6 @@ public class MainWindow extends JFrame {
 		JPanel AuxTopPanel4 = new JPanel();
 		JPanel AuxTopPanel5 = new JPanel();
 		JPanel AuxTopPanel6 = new JPanel();
-		JPanel AuxTopPanel7 = new JPanel();
 
 		WeightTF.setText("100");
 
@@ -308,7 +302,6 @@ public class MainWindow extends JFrame {
 		AuxTopPanel4.setOpaque(false);
 		AuxTopPanel5.setOpaque(false);
 		AuxTopPanel6.setOpaque(false);
-		AuxTopPanel7.setOpaque(false);
 
 		AuxTopPanel0.setLayout(new GridLayout(3, 1, 5, 5));
 		AuxTopPanel1.setLayout(new GridLayout(2, 1));
@@ -316,7 +309,6 @@ public class MainWindow extends JFrame {
 		AuxTopPanel3.setLayout(new GridLayout(2, 1));
 		AuxTopPanel4.setLayout(new GridLayout(2, 1));
 		AuxTopPanel5.setLayout(new GridLayout(2, 1));
-		AuxTopPanel7.setLayout(new GridLayout(2, 1));
 
 		JLabel userName = new JLabel("    Hello " + LoginWindow.userName + " !");
 		JLabel Tittle1 = new JLabel("       Weight : ");
@@ -326,7 +318,6 @@ public class MainWindow extends JFrame {
 		JLabel Tittle5 = new JLabel("      Calories :");
 		JLabel Tittle6 = new JLabel("     Choose product :  ");
 		JLabel Tittle6b = new JLabel("Filter product list :  ");
-		JLabel TittleNr = new JLabel("    Meal :  ");
 
 		userName.setFont(new Font("Dialog", Font.BOLD, 15));
 		Tittle1.setFont(new Font("Dialog", Font.BOLD, 13));
@@ -336,7 +327,6 @@ public class MainWindow extends JFrame {
 		Tittle5.setFont(new Font("Dialog", Font.BOLD, 13));
 		Tittle6.setFont(new Font("Dialog", Font.BOLD, 14));
 		Tittle6b.setFont(new Font("Dialog", Font.BOLD, 14));
-		TittleNr.setFont(new Font("Dialog", Font.BOLD, 14));
 
 		Tittle6.setHorizontalAlignment(SwingConstants.RIGHT);
 		Tittle6b.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -349,22 +339,15 @@ public class MainWindow extends JFrame {
 		Tittle5.setForeground(Color.BLACK);
 		Tittle6.setForeground(Color.BLACK);
 		Tittle6b.setForeground(Color.BLACK);
-		TittleNr.setForeground(Color.BLACK);
 
 		comboBox.setBackground(Color.WHITE);
 		comboBox.setForeground(Color.BLACK);
 
-		Integer[] MealNumber = { 1, 2, 3, 4, 5 };
-		comboBoxNr.setModel(new DefaultComboBoxModel<Integer>(MealNumber));
-		comboBoxNr.setBackground(Color.WHITE);
-		comboBoxNr.setForeground(Color.BLACK);
 
 		comboBox.setBorder(new LineBorder(Color.WHITE, 1));
-		comboBoxNr.setBorder(new LineBorder(Color.WHITE, 1));
 
 		comboBox.setPrototypeDisplayValue("       Choose a product from list        ");
 		((JLabel) comboBox.getRenderer()).setHorizontalAlignment(JLabel.LEFT);
-		((JLabel) comboBoxNr.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
 
 		JPanel comboPanel = new JPanel();
 		comboPanel.setOpaque(false);
@@ -395,8 +378,6 @@ public class MainWindow extends JFrame {
 		AuxTopPanel6.add(comboPanel);
 		AuxTopPanel6.add(ButtonAddNewProd);
 		AuxTopPanel6.add(ButtonDeleteProd);
-		AuxTopPanel7.add(TittleNr);
-		AuxTopPanel7.add(comboBoxNr);
 
 		JPanel topPanel1 = new JPanel();
 		JPanel topPanel2 = new JPanel();
@@ -413,7 +394,6 @@ public class MainWindow extends JFrame {
 		topPanel2.add(AuxTopPanel0);
 		topPanel2.add(AuxTopPanel6);
 		topPanel1.add(topPanel3);
-		topPanel3.add(AuxTopPanel7);
 		topPanel3.add(AuxTopPanel1);
 		topPanel3.add(AuxTopPanel2);
 		topPanel3.add(AuxTopPanel3);
@@ -587,8 +567,6 @@ public class MainWindow extends JFrame {
 							dailyProducts.setProductName(model.getValueAt(row, 0).toString());
 							dailyProducts.setID(Integer
 									.parseInt(getDateFromDB("ID", "dailyproducts", dailyProducts.getProductName())));
-							dailyProducts
-									.setMealNo(Integer.parseInt(model.getValueAt(row, 1).toString().replace("# ", "")));
 							dailyProducts.setWeight(
 									Double.parseDouble(model.getValueAt(row, 2).toString().replace(" g", "")));
 							dailyProducts.setCarbo(Double.parseDouble(model.getValueAt(row, 3).toString()));
@@ -655,7 +633,7 @@ public class MainWindow extends JFrame {
 						LoginWindow.productCarbsMap.remove(products.getProductName());
 						LoginWindow.productWheyMap.remove(products.getProductName());
 						LoginWindow.productFatsMap.remove(products.getProductName());
-						RefreshComboBox();
+						RefreshComboBox("");
 						filterTF.setText("");
 						
 					} catch (Exception ex) {
@@ -738,21 +716,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
 				filterString = filterTF.getText().toLowerCase();
-				List<String> filteredCBList = new ArrayList<>();
-				if (filterString.equals("") || filterString.equals(null)) {
-					RefreshComboBox();
-				} else {
-					for (int i = 0; i < comboBox.getItemCount(); i++) {
-						if (comboBox.getItemAt(i).toLowerCase().contains(filterString)) {
-							filteredCBList.add(comboBox.getItemAt(i));
-						}
-					}
-					comboBox.removeAllItems();
-
-					for (String filteredCBItems : filteredCBList) {
-						comboBox.addItem(filteredCBItems);
-					}
-				}
+				RefreshComboBox(filterString);
 			}
 
 			@Override
@@ -891,7 +855,6 @@ public class MainWindow extends JFrame {
 					dailyProducts.setWhey(Double.parseDouble(WheyTF.getText().replace(",", ".")));
 					dailyProducts.setFats(Double.parseDouble(FatsTF.getText().replace(",", ".")));
 					dailyProducts.setWeight(Double.parseDouble(WeightTF.getText().replace(",", ".")));
-					dailyProducts.setMealNo(Integer.parseInt(comboBoxNr.getSelectedItem().toString()));
 
 					try {
 
@@ -905,11 +868,10 @@ public class MainWindow extends JFrame {
 
 						String ValuesSTR = LoginWindow.UserID + ", '" + DateToday + "' , '"
 								+ dailyProducts.getProductName() + "' ," + dailyProducts.getCarbo() + ", "
-								+ dailyProducts.getWhey() + ", " + dailyProducts.getFats() + ", "
-								+ dailyProducts.getMealNo() + ", " + dailyProducts.getWeight();
+								+ dailyProducts.getWhey() + ", " + dailyProducts.getFats() + ", " + dailyProducts.getWeight();
 
 						st.executeUpdate(
-								"INSERT INTO dailyproducts (UserID, Date, ProductName, Carbo, Whey, Fats, MealNo, Weight)"
+								"INSERT INTO dailyproducts (UserID, Date, ProductName, Carbo, Whey, Fats, Weight)"
 										+ " VALUES (" + ValuesSTR + ")");
 
 						conn.close();
@@ -920,21 +882,19 @@ public class MainWindow extends JFrame {
 
 					finally {
 
-						String[] dateCurrentDay = new String[7];
+						String[] dateCurrentDay = new String[6];
 
 						dateCurrentDay[0] = comboBox.getSelectedItem().toString();
 
-						dateCurrentDay[1] = "# " + String.valueOf(dailyProducts.getMealNo());
+						dateCurrentDay[1] = String.valueOf(Math.round(dailyProducts.getWeight())) + " g";
 
-						dateCurrentDay[2] = String.valueOf(Math.round(dailyProducts.getWeight())) + " g";
+						dateCurrentDay[2] = String.valueOf(dailyProducts.getCarbo());
 
-						dateCurrentDay[3] = String.valueOf(dailyProducts.getCarbo());
+						dateCurrentDay[3] = String.valueOf(dailyProducts.getWhey());
 
-						dateCurrentDay[4] = String.valueOf(dailyProducts.getWhey());
+						dateCurrentDay[4] = String.valueOf(dailyProducts.getFats());
 
-						dateCurrentDay[5] = String.valueOf(dailyProducts.getFats());
-
-						dateCurrentDay[6] = String
+						dateCurrentDay[5] = String
 								.valueOf(Math.round(((dailyProducts.getCarbo() + dailyProducts.getWhey()) * 4)
 										+ dailyProducts.getFats() * 9));
 
@@ -981,12 +941,14 @@ public class MainWindow extends JFrame {
 		return DateFromDB;
 	}
 
-	static void RefreshComboBox() {
+	static void RefreshComboBox(String filter) {
 
 		comboBox.removeAllItems();
 
 		for (String name : LoginWindow.productNameList) {
+			if ( name.toLowerCase().contains(filter.toLowerCase())) {
 			comboBox.addItem(name);
+			}
 		}
 	}
 
@@ -1050,26 +1012,23 @@ public class MainWindow extends JFrame {
 
 			while (rs.next()) {
 
-				Object[] dateCurrentDay = new String[7];
+				Object[] dateCurrentDay = new String[6];
 
 				dateCurrentDay[0] = rs.getString("ProductName");
 
-				NoOfMeal = rs.getInt("MealNo");
-				dateCurrentDay[1] = "# " + String.valueOf(NoOfMeal);
-
 				Weight = rs.getDouble("Weight");
-				dateCurrentDay[2] = String.valueOf(Math.round(Weight)) + " g";
+				dateCurrentDay[1] = String.valueOf(Math.round(Weight)) + " g";
 
 				Carbo = rs.getDouble("Carbo");
-				dateCurrentDay[3] = String.valueOf(Carbo);
+				dateCurrentDay[2] = String.valueOf(Carbo);
 
 				Whey = rs.getDouble("Whey");
-				dateCurrentDay[4] = String.valueOf(Whey);
+				dateCurrentDay[3] = String.valueOf(Whey);
 
 				Fats = rs.getDouble("Fats");
-				dateCurrentDay[5] = String.valueOf(Fats);
+				dateCurrentDay[4] = String.valueOf(Fats);
 
-				dateCurrentDay[6] = String.valueOf(Math.round(((Carbo + Whey) * 4) + Fats * 9));
+				dateCurrentDay[5] = String.valueOf(Math.round(((Carbo + Whey) * 4) + Fats * 9));
 
 				model.addRow(dateCurrentDay);
 			}
