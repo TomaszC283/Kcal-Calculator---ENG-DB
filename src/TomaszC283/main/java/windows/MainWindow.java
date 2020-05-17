@@ -160,7 +160,7 @@ public class MainWindow extends JFrame {
 		comboBox.setSelectedItem(null);
 
 		// Create JTable
-		String[] columnNames = { "Product", "Meal", "Weight", "Carbs", "Proteins", "Fats", "KCal" };
+		String[] columnNames = { "Product", "Weight", "Carbs", "Proteins", "Fats", "KCal" };
 
 		model.setColumnIdentifiers(columnNames);
 		model.fireTableDataChanged();
@@ -955,21 +955,21 @@ public class MainWindow extends JFrame {
 	private void RefreshSummaryPanel() {
 
 		for (int count = 0; count < model.getRowCount(); count++) {
-			dailyProducts.setCarbo(Double.parseDouble(model.getValueAt(count, 3).toString()));
+			dailyProducts.setCarbo(Double.parseDouble(model.getValueAt(count, 2).toString()));
 			tempValue = tempValue + dailyProducts.getCarbo();
 		}
 		TotalCarboTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
 		tempValue = 0;
 
 		for (int count = 0; count < model.getRowCount(); count++) {
-			dailyProducts.setWhey(Double.parseDouble(model.getValueAt(count, 4).toString()));
+			dailyProducts.setWhey(Double.parseDouble(model.getValueAt(count, 3).toString()));
 			tempValue = tempValue + dailyProducts.getWhey();
 		}
 		TotalWheyTF.setText((String.format("%.2f", tempValue)).replace(",", "."));
 		tempValue = 0;
 
 		for (int count = 0; count < model.getRowCount(); count++) {
-			dailyProducts.setFats(Double.parseDouble(model.getValueAt(count, 5).toString()));
+			dailyProducts.setFats(Double.parseDouble(model.getValueAt(count, 4).toString()));
 			tempValue = tempValue + dailyProducts.getFats();
 		}
 		TotalFatsTF.setText((String.format("%.2f", tempValue)).replace(",", "."));

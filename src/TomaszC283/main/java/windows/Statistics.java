@@ -106,7 +106,7 @@ public class Statistics extends JFrame {
 
 		backgroundLabel = new JLabel("", background, JLabel.CENTER);
 		backgroundLabel.setBounds(0, 0, 550, 434);
-		backgroundLabel.setBorder(new LineBorder(new Color(255, 255, 255, 0), 60));
+		backgroundLabel.setBorder(new LineBorder(new Color(255, 255, 255, 0), 50));
 
 		dpFrame.add(backgroundLabel);
 
@@ -128,12 +128,9 @@ public class Statistics extends JFrame {
 		backgroundLabel.setLayout(new BorderLayout());
 		fxPanel.setLayout(new GridLayout(3, 1, 0, 5));
 		datePanel.setLayout(new GridLayout(10, 1, 10, 5));
-		
-		datePanel.setBorder(new LineBorder(new Color(255,255,255,0), 20));
-		paddingPanel.setBorder(new LineBorder(new Color(255,255,255,0), 20));
-		caloriesPanel.setBorder(new LineBorder(Color.BLACK, 5));
-		macrosPanel.setBorder(new LineBorder(Color.BLACK, 5));
-		weightPanel.setBorder(new LineBorder(Color.BLACK, 5));
+
+		datePanel.setBorder(new LineBorder(new Color(255, 255, 255, 0), 20));
+		paddingPanel.setBorder(new LineBorder(new Color(255, 255, 255, 0), 10));
 
 		statisticTrendy.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 15));
 
@@ -162,21 +159,7 @@ public class Statistics extends JFrame {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				initFX(caloriesPanel, 1);
-			}
-		});
-
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				initFX(macrosPanel, 2);
-			}
-		});
-
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				initFX(weightPanel, 3);
+				initFX();
 			}
 		});
 
@@ -211,34 +194,29 @@ public class Statistics extends JFrame {
 		wheysMap.clear();
 		fatsMap.clear();
 		caloriesMap.clear();
-		initFX(caloriesPanel, 1);
-		initFX(macrosPanel, 2);
-		initFX(weightPanel, 3);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				initFX();
+			}
+		});
 	}
-	
-	private static void initFX(JFXPanel fxPanel, int panelValue) {
 
-		if (panelValue == 1) {
-			Scene scene = createCaloriesChart();
-			caloriesPanel.setScene(scene);
-		}
+	private static void initFX() {
 
-		if (panelValue == 2) {
-			Scene scene = createMacrosChart();
-			macrosPanel.setScene(scene);
-		}
-
-		if (panelValue == 3) {
-			Scene scene = createWeightChart();
-			weightPanel.setScene(scene);
-		}
+		Scene scene = createMacrosChart();
+		macrosPanel.setScene(scene);
+		scene = createWeightChart();
+		weightPanel.setScene(scene);
+		scene = createCaloriesChart();
+		caloriesPanel.setScene(scene);
 	}
 
 	private static Scene createCaloriesChart() {
 
-		final CategoryAxis xAxis = new CategoryAxis();
-		final NumberAxis yAxis = new NumberAxis();
-		final LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
+		CategoryAxis xAxis = new CategoryAxis();
+		NumberAxis yAxis = new NumberAxis();
+		LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
 		yAxis.setForceZeroInRange(false);
 		seriesCalories = new XYChart.Series<>();
 		seriesCalories.setName("Calories");
@@ -254,7 +232,6 @@ public class Statistics extends JFrame {
 
 			ResultSet rs = st.executeQuery(
 					"SELECT * FROM dailyproducts WHERE userID = " + LoginWindow.UserID + " ORDER BY Date ASC");
-
 			if (daysTrend.isSelected()) {
 				while (rs.next()) {
 
@@ -280,18 +257,17 @@ public class Statistics extends JFrame {
 			}
 
 			if (weeksTrend.isSelected()) {
-				
+
 				strToCompare = "";
 				dayToCompare = "";
-				
+
 				while (rs.next()) {
 					dateOfDB = rs.getString("date");
 					weekOfDay = new SimpleDateFormat("w").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB));
-
-					if ( !dayToCompare.equals(dateOfDB) && strToCompare.equals(weekOfDay)) {
+					if (!dayToCompare.equals(dateOfDB) && strToCompare.equals(weekOfDay)) {
 						countSummaryValue++;
 					}
-					
+
 					if (strToCompare.equals(weekOfDay)) {
 						summaryCarbsValue += rs.getDouble("Carbo");
 						summaryWheysValue += rs.getDouble("Whey");
@@ -304,35 +280,35 @@ public class Statistics extends JFrame {
 						summaryWheysValue = rs.getDouble("Whey");
 						summaryFatsValue = rs.getDouble("Fats");
 					}
-					
-					caloriesMap.put(weekOfDay + " week - "
-							+ new SimpleDateFormat("yyyy")
-							.format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)),
-							(int) Math.round((summaryCarbsValue * 4 + summaryWheysValue * 4 + summaryFatsValue * 9)/countSummaryValue));
-					
+					caloriesMap.put(
+							weekOfDay + " week - "
+									+ new SimpleDateFormat("yyyy")
+											.format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)),
+							(int) Math.round((summaryCarbsValue * 4 + summaryWheysValue * 4 + summaryFatsValue * 9)
+									/ countSummaryValue));
+
 					strToCompare = new SimpleDateFormat("w")
 							.format(new SimpleDateFormat("yyyy/MM/dd").parse(rs.getString("date")));
-					
+
 					dayToCompare = rs.getString("date");
 				}
-				
 				lineChart.setTitle(
 						"Calories statistics divided into week in year - last " + caloriesMap.size() + " results");
 			}
 
 			if (monthsTrend.isSelected()) {
-				
+
 				strToCompare = "";
 				dayToCompare = "";
-				
+
 				while (rs.next()) {
 					dateOfDB = rs.getString("date");
 					monthOfDay = new SimpleDateFormat("MMM").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB));
-					
-					if ( !dayToCompare.equals(dateOfDB) && strToCompare.equals(monthOfDay)) {
+
+					if (!dayToCompare.equals(dateOfDB) && strToCompare.equals(monthOfDay)) {
 						countSummaryValue++;
 					}
-					
+
 					if (strToCompare.equals(monthOfDay)) {
 						summaryCarbsValue += rs.getDouble("Carbo");
 						summaryWheysValue += rs.getDouble("Whey");
@@ -346,15 +322,17 @@ public class Statistics extends JFrame {
 						summaryFatsValue = rs.getDouble("Fats");
 					}
 
-					caloriesMap.put(new SimpleDateFormat("MMM yyyy").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)),
-							(int) Math.round((summaryCarbsValue * 4 + summaryWheysValue * 4 + summaryFatsValue * 9)/countSummaryValue));
-					
+					caloriesMap.put(
+							new SimpleDateFormat("MMM yyyy").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)),
+							(int) Math.round((summaryCarbsValue * 4 + summaryWheysValue * 4 + summaryFatsValue * 9)
+									/ countSummaryValue));
+
 					strToCompare = new SimpleDateFormat("MMM")
 							.format(new SimpleDateFormat("yyyy/MM/dd").parse(rs.getString("date")));
-					
+
 					dayToCompare = rs.getString("date");
 				}
-				
+
 				lineChart.setTitle("Calories statistics divided into months - last " + caloriesMap.size() + " results");
 			}
 
@@ -376,7 +354,6 @@ public class Statistics extends JFrame {
 			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.INFORMATION_MESSAGE,
 					deleteImage);
 		}
-
 		lineChart.getData().add(seriesCalories);
 		VBox vbox = new VBox(lineChart);
 		vbox.setBackground(Background.EMPTY);
@@ -391,9 +368,9 @@ public class Statistics extends JFrame {
 	@SuppressWarnings("unchecked")
 	private static Scene createMacrosChart() {
 
-		final CategoryAxis xAxis = new CategoryAxis();
-		final NumberAxis yAxis = new NumberAxis();
-		final LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
+		CategoryAxis xAxis = new CategoryAxis();
+		NumberAxis yAxis = new NumberAxis();
+		LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
 		yAxis.setForceZeroInRange(false);
 
 		seriesCarbs = new XYChart.Series<>();
@@ -402,7 +379,7 @@ public class Statistics extends JFrame {
 		seriesWheys.setName(" Wheys");
 		seriesFats = new XYChart.Series<>();
 		seriesFats.setName(" Fats");
-		
+
 		try {
 			String myDriver = "com.mysql.cj.jdbc.Driver";
 			String myUrl = "jdbc:mysql://phpmyadmin47.lh.pl:3306/serwer58262_Kcal?useJDBCCompliantTimezoneShift=true&serverTimezone=UTC&characterEncoding=utf-8";
@@ -416,7 +393,6 @@ public class Statistics extends JFrame {
 					"SELECT * FROM dailyproducts WHERE userID = " + LoginWindow.UserID + " ORDER BY Date ASC");
 
 			if (daysTrend.isSelected()) {
-				
 				while (rs.next()) {
 					dateOfDB = rs.getString("Date");
 
@@ -449,19 +425,19 @@ public class Statistics extends JFrame {
 			}
 
 			if (weeksTrend.isSelected()) {
-				
+
 				strToCompare = "";
 				dayToCompare = "";
-				
+
 				while (rs.next()) {
 
 					dateOfDB = rs.getString("date");
 					weekOfDay = new SimpleDateFormat("w").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB));
 
-					if ( !dayToCompare.equals(dateOfDB) && strToCompare.equals(weekOfDay) ) {
+					if (!dayToCompare.equals(dateOfDB) && strToCompare.equals(weekOfDay)) {
 						countSummaryValue++;
 					}
-					
+
 					if (strToCompare.equals(weekOfDay)) {
 						summaryCarbsValue += rs.getDouble("Carbo");
 						summaryWheysValue += rs.getDouble("Whey");
@@ -498,7 +474,7 @@ public class Statistics extends JFrame {
 
 					strToCompare = new SimpleDateFormat("w")
 							.format(new SimpleDateFormat("yyyy/MM/dd").parse(rs.getString("date")));
-					
+
 					dayToCompare = rs.getString("date");
 				}
 
@@ -507,20 +483,19 @@ public class Statistics extends JFrame {
 			}
 
 			if (monthsTrend.isSelected()) {
-				
+
 				strToCompare = "";
 				dayToCompare = "";
-				
+
 				while (rs.next()) {
 
 					dateOfDB = rs.getString("date");
 					monthOfDay = new SimpleDateFormat("MMM").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB));
 
-					if ( dayToCompare.equals(dateOfDB) && strToCompare.equals(monthOfDay))
-					{
+					if (dayToCompare.equals(dateOfDB) && strToCompare.equals(monthOfDay)) {
 						countSummaryValue++;
 					}
-					
+
 					if (strToCompare.equals(monthOfDay)) {
 						summaryCarbsValue += rs.getDouble("Carbo");
 						summaryWheysValue += rs.getDouble("Whey");
@@ -534,18 +509,24 @@ public class Statistics extends JFrame {
 						summaryFatsValue = rs.getDouble("Fats");
 					}
 
-					carbsMap.put(new SimpleDateFormat("MMM yyyy").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)), Double.parseDouble(
-							String.format("%.1f", summaryCarbsValue / countSummaryValue).replace(",", ".")));
+					carbsMap.put(
+							new SimpleDateFormat("MMM yyyy").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)),
+							Double.parseDouble(
+									String.format("%.1f", summaryCarbsValue / countSummaryValue).replace(",", ".")));
 
-					wheysMap.put(new SimpleDateFormat("MMM yyyy").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)), Double.parseDouble(
-							String.format("%.1f", summaryWheysValue / countSummaryValue).replace(",", ".")));
+					wheysMap.put(
+							new SimpleDateFormat("MMM yyyy").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)),
+							Double.parseDouble(
+									String.format("%.1f", summaryWheysValue / countSummaryValue).replace(",", ".")));
 
-					fatsMap.put(new SimpleDateFormat("MMM yyyy").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)), Double.parseDouble(
-							String.format("%.1f", summaryFatsValue / countSummaryValue).replace(",", ".")));
+					fatsMap.put(
+							new SimpleDateFormat("MMM yyyy").format(new SimpleDateFormat("yyyy/MM/dd").parse(dateOfDB)),
+							Double.parseDouble(
+									String.format("%.1f", summaryFatsValue / countSummaryValue).replace(",", ".")));
 
 					strToCompare = new SimpleDateFormat("MMM")
 							.format(new SimpleDateFormat("yyyy/MM/dd").parse(rs.getString("date")));
-					
+
 					dayToCompare = rs.getString("date");
 				}
 
@@ -594,9 +575,9 @@ public class Statistics extends JFrame {
 	@SuppressWarnings("unchecked")
 	private static Scene createWeightChart() {
 
-		final CategoryAxis xAxis = new CategoryAxis();
-		final NumberAxis yAxis = new NumberAxis();
-		final LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
+		CategoryAxis xAxis = new CategoryAxis();
+		NumberAxis yAxis = new NumberAxis();
+		LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
 		yAxis.setForceZeroInRange(false);
 
 		seriesWeight = new XYChart.Series<>();
@@ -700,5 +681,4 @@ public class Statistics extends JFrame {
 
 		return (scene);
 	}
-
 }
